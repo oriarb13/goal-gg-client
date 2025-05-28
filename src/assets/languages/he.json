@@ -1,16 +1,92 @@
 {
-  "direction": "ltr",
-  "loginWidget": {
-    "loginHeader": {
-      "welcomeBack": "ברוכים הבאים!"
-    },
-    "loginForm": {
-      "emailAddress": "כתובת אימייל",
-      "password": "סיסמה",
-      "rememberMe": "זכרו אותי",
-      "forgotPassword?": "שכחתי ססמה",
-      "logIn": "התחברות",
-      "wrongEmailOrPassword": "כתובת אימייל או סיסמה שגויים"
-    }
+  "direction": "rtl",
+  "common": {
+    "loading": "טוען...",
+    "cancel": "ביטול",
+    "submit": "שלח",
+    "auth": "שגיאת אימות"
+  },
+  "snackbar": {
+    "sessionExpired": "הפעלת ההתחברות פגה, אנא התחבר מחדש",
+    "loginRequired": "עליך להתחבר כדי לגשת לדף זה",
+    "logoutSuccess": "התנתקת בהצלחה",
+    "authenticationFailed": "האימות נכשל",
+    "connectionError": "שגיאת התחברות",
+    "userCreationFailed": "יצירת המשתמש נכשלה",
+    "loginError": "דוא\"ל או סיסמה שגויים"
+  },
+  "mainMenu": {
+    "logout": "התנתק",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "help": "עזרה",
+    "ourStory": "הסיפור שלנו",
+    "contact": "צור קשר",
+    "login": "התחבר",
+    "register": "הירשם"
+  },
+  "form": {
+    "email": "דוא\"ל",
+    "password": "סיסמה",
+    "forgotPassword": "שכחת סיסמה?",
+    "submit": "שלח",
+    "cancel": "ביטול"
+  },
+  "index": {
+    "title": "GOAL GG",
+    "friendly": "חברתי",
+    "professional": "מקצועי",
+    "description": "קח את התחביב שלך צעד אחד קדימה עם"
+  },
+  "loginModal": {
+    "dontHaveAccountYet": "עדיין אין לך חשבון?",
+    "clickHere": "לחץ כאן להירשם",
+    "login": "התחבר",
+    "register": "הירשם",
+    "emailOrPasswordError": "דוא\"ל או סיסמה שגויים"
+  },
+  "signup": {
+    "alreadyHaveAccount": "כבר יש לך חשבון?",
+    "clickHere": "לחץ כאן להתחבר",
+    "register": "הירשם",
+    "title": "הרשמה",
+    "fullNameLabel": "שם מלא",
+    "emailLabel": "דוא\"ל",
+    "passwordLabel": "סיסמה",
+    "login": "התחבר",
+    "fullNamePlaceholder": "הזן את שמך המלא",
+    "emailPlaceholder": "הזן את כתובת הדוא\"ל שלך",
+    "passwordPlaceholder": "הזן את הסיסמה שלך",
+    "confirmPasswordPlaceholder": "אשר את הסיסמה שלך",
+    "agreeToTerms": "אני מסכים לתנאים ולהגבלות",
+    "clickHereToLogin": "לחץ כאן להתחבר",
+    "confirmPasswordLabel": "אישור סיסמה",
+    "clickHereToRegister": "לחץ כאן להירשם",
+    "submit": "שלח",
+    "cancel": "ביטול",
+    "phoneLabel": "מספר טלפון",
+    "phonePlaceholder": "הזן את מספר הטלפון שלך",
+    "yearOfBirthLabel": "שנת לידה",
+    "yearOfBirthPlaceholder": "הזן את שנת הלידה שלך",
+    "countryLabel": "מדינה",
+    "countryPlaceholder": "הזן את המדינה שלך",
+    "cityLabel": "עיר",
+    "cityPlaceholder": "הזן את העיר שלך",
+    "firstNameLabel": "שם פרטי",
+    "firstNamePlaceholder": "הזן את שמך הפרטי",
+    "lastNameLabel": "שם משפחה",
+    "lastNamePlaceholder": "הזן את שם המשפחה שלך",
+    "sportCategoryLabel": "קטגוריית ספורט",
+    "sportFootball": "כדורגל",
+    "sportBasketball": "כדורסל",
+    "userCreatedSuccessfully": "המשתמש נוצר בהצלחה",
+    "failed": "יצירת המשתמש נכשלה"
+  },
+  "main": {
+    "fieldChoice": "מצא את השדה המושלם בקרבתך",
+    "playWithYourFriends": "צור או הצטרף למועדונים ושחק עם החברים שלך",
+    "friends": "מצא חברים חדשים",
+    "or": "או",
+    "fields": "מצא שדה"
   }
 }
