@@ -1,0 +1,16 @@
+{
+  "direction": "ltr",
+  "loginWidget": {
+    "loginHeader": {
+      "welcomeBack": "ברוכים הבאים!"
+    },
+    "loginForm": {
+      "emailAddress": "כתובת אימייל",
+      "password": "סיסמה",
+      "rememberMe": "זכרו אותי",
+      "forgotPassword?": "שכחתי ססמה",
+      "logIn": "התחברות",
+      "wrongEmailOrPassword": "כתובת אימייל או סיסמה שגויים"
+    }
+  }
+}

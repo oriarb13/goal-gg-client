@@ -1,0 +1,15 @@
+{
+  "direction": "rtl",
+  "screens": {
+    "login": {
+      "title": "Login",
+      "dontHave": "Don't have an account?",
+      "createAccount": "Create New Account"
+    },
+    "signup": {
+      "title": "Create New Account",
+      "alreadyHaveAnAccount": "Already have an account?",
+      "login": "Login"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+    "direction": "ltr",
+    "loginWidget": {
+      "loginHeader": {
+        "welcomeBack": "¡Bienvenido de nuevo!"
+      },
+      "loginForm": {
+        "emailAddress": "Correo electrónico",
+        "password": "Contraseña",
+        "rememberMe": "Recuérdame",
+        "forgotPassword?": "¿Olvidaste tu contraseña?",
+        "logIn": "Iniciar sesión",
+        "wrongEmailOrPassword": "Correo electrónico o contraseña incorrectos"
+      },
+      "forgetPasswordForm": {
+        "emailAddress": "Correo Electrónico",
+        "backToLoginPage": "volver a la página de inicio de sesión",
+        "continue": "Continuar",
+        "resetPassword": "Restablecer contraseña",
+        "enterTheEmailAssociated": "Ingresa el correo electrónico asociado a tu cuenta y te enviaremos un enlace para restablecer tu contraseña",
+        "invalidEmail": "Correo electrónico no válido"
+      }
+    }
+  }
