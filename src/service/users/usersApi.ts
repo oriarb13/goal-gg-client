@@ -24,7 +24,7 @@ const API_BASE_URL =
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
+  // withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -73,9 +73,21 @@ export const usersApi = {
       console.log("Login Credentials:", credentials);
 
       const response = await apiClient.post("/users/login", credentials);
+      console.log("response", response);
 
-      console.log("Full Response:", response);
-      return response.data;
+      const apiResponse = response.data;
+      console.log("apiResponse", apiResponse);
+
+      if (apiResponse.success && apiResponse.data) {
+        return {
+          success: apiResponse.success,
+          data: apiResponse.data,
+          message: apiResponse.message,
+          status: apiResponse.status,
+        };
+      }
+
+      return apiResponse;
     } catch (error: any) {
       console.error("Full error object:", error);
       console.error("Error response:", error.response);
@@ -89,7 +101,6 @@ export const usersApi = {
       throw new Error(error.response?.data?.message || "Login failed");
     }
   },
-
   // get all users
   async getAllUsers(
     skip: number = 0,
