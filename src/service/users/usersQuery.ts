@@ -3,7 +3,7 @@ import { authUtils, usersApi } from "./usersApi";
 import {
   type UserCreate,
   type UserLogin,
-//   type UserFull,
+  //   type UserFull,
 } from "@/types/userTypes";
 
 // =============================================
@@ -111,7 +111,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: UserLogin) => usersApi.login(credentials),
     onSuccess: (data) => {
-      if (data.success && data.data) {
+      if (data.data) {
         // שמירת נתוני התחברות
         authUtils.saveAuth(data.data);
 
@@ -203,7 +203,7 @@ export const useAuth = () => {
   const login = async (credentials: UserLogin) => {
     try {
       const result = await loginMutation.mutateAsync(credentials);
-      return result.success;
+      return result.data;
     } catch (error) {
       return false;
     }
