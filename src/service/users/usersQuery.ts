@@ -197,8 +197,10 @@ export const useLogout = () => {
     },
     onSuccess: () => {
       console.log("Logged out successfully");
-      queryClient.clear(); //clear the query cache
-      window.location.href = "/"; //redirect to the landing page
+      queryClient.clear();
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
     },
   });
 };
@@ -237,18 +239,16 @@ export const useAuth = () => {
       const result = await loginMutation.mutateAsync(credentials);
 
       if (result.status === 200) {
-        // הודעת הצלחה תוצג כבר ב-LoginModal, אז לא צריך כאן
         return true;
       }
       return false;
     } catch (error) {
-      // הודעת שגיאה תוצג כבר ב-LoginModal
       return false;
     }
   };
 
   const logoutUser = () => {
-    // הצג הודעת logout לפני הביצוע
+    //show logout message
     dispatch(
       showSnackBar({
         message: "Logged out successfully",
@@ -257,7 +257,6 @@ export const useAuth = () => {
       })
     );
 
-    // בצע logout
     logoutMutation.mutate();
   };
 
