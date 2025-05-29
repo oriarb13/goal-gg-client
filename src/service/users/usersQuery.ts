@@ -17,6 +17,7 @@ import {
 import { type UserCreate, type UserLogin } from "@/types/userTypes";
 import { type AppDispatch } from "@/store/store";
 import { useNavigate } from "react-router-dom";
+import { showSnackBar } from "@/store/slices/snackBarSlice";
 
 // =============================================
 // Query Keys
@@ -234,13 +235,29 @@ export const useAuth = () => {
   const login = async (credentials: UserLogin) => {
     try {
       const result = await loginMutation.mutateAsync(credentials);
-      return result.status === 200;
+
+      if (result.status === 200) {
+        // הודעת הצלחה תוצג כבר ב-LoginModal, אז לא צריך כאן
+        return true;
+      }
+      return false;
     } catch (error) {
+      // הודעת שגיאה תוצג כבר ב-LoginModal
       return false;
     }
   };
 
   const logoutUser = () => {
+    // הצג הודעת logout לפני הביצוע
+    dispatch(
+      showSnackBar({
+        message: "Logged out successfully",
+        severity: "success",
+        show: true,
+      })
+    );
+
+    // בצע logout
     logoutMutation.mutate();
   };
 

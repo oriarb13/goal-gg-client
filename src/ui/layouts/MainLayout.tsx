@@ -11,8 +11,10 @@ import {
   selectCurrentUser,
 } from "@/store/slices/userSlice";
 import { logout } from "@/store/slices/userSlice";
+import { showSnackBar } from "@/store/slices/snackBarSlice";
 import { useAuth } from "@/service/users/usersQuery";
 import { usersApi } from "@/service/users/usersApi";
+import { GlobalSnackBar } from "@/ui/shared/globalSnackbar";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -37,7 +39,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     authLogout();
   };
 
-  //token check
+  // Token check with snackbar notifications
   useEffect(() => {
     const checkTokenValidity = async () => {
       if (isAuthenticated) {
@@ -45,6 +47,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
         if (!token) {
           console.log("🔓 No token found - logging out");
+          dispatch(
+            showSnackBar({
+              message: "Session expired. Please login again.",
+              severity: "error",
+              show: true,
+            })
+          );
           dispatch(logout());
           return;
         }
@@ -54,6 +63,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
           if (response.status !== 200) {
             console.log("🔓 Token invalid - logging out");
+            dispatch(
+              showSnackBar({
+                message: "Session expired. Please login again.",
+                severity: "error",
+                show: true,
+              })
+            );
             dispatch(logout());
           } else {
             console.log("✅ Token is valid");
@@ -61,9 +77,23 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         } catch (error: any) {
           if (error?.response?.status === 401) {
             console.log("🔓 Token expired - logging out");
+            dispatch(
+              showSnackBar({
+                message: "Session expired. Please login again.",
+                severity: "error",
+                show: true,
+              })
+            );
             dispatch(logout());
           } else {
             console.log("🔓 Auth check failed - logging out");
+            dispatch(
+              showSnackBar({
+                message: "Connection error. Please try again.",
+                severity: "error",
+                show: true,
+              })
+            );
             dispatch(logout());
           }
         }
@@ -98,6 +128,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             currentUser={currentUser}
             onLogout={handleLogout}
           />
+          <GlobalSnackBar />
           <LoginModal
             isOpen={isLoginModalOpen}
             onClose={() => setIsLoginModalOpen(false)}
@@ -124,6 +155,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           }}
         />
         <div className="relative z-10 h-full flex items-center justify-center">
+          <GlobalSnackBar />
           <div className="text-white text-xl">Loading...</div>
         </div>
       </div>
@@ -150,6 +182,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
+        <GlobalSnackBar />
         <LoginModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
