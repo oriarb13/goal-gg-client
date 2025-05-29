@@ -12,7 +12,6 @@ const DotsLoader: React.FC<LoaderProps> = ({
   className = "",
   ...props
 }) => {
-  // הזרקת הסגנון באופן אוטומטי בעת טעינת הקומפוננטה
   useEffect(() => {
     const styleExists = document.getElementById("loader-styles");
     if (!styleExists) {

@@ -1,9 +1,11 @@
 import axios from "axios";
+import { store } from "@/store/store";
+import { logout } from "@/store/slices/userSlice";
 import {
   type UserCreate,
   type UserFull,
   type UserLogin,
-} from "../../types/userTypes";
+} from "@/types/userTypes";
 
 export interface LoginResponse {
   access_token: string;
@@ -20,29 +22,54 @@ export interface ApiResponse<T> {
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-const getHeaders = () => {
-  const headers: any = {
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
     "Content-Type": "application/json",
-  };
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
+  },
+});
 
-  return headers;
-};
+// add auto token
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// handle 401 disconnect
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      store.dispatch(logout());
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const usersApi = {
-  // register
+  // auth check - return current user
+  async auth(): Promise<ApiResponse<UserFull>> {
+    try {
+      const response = await apiClient.get("/users/auth");
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Auth check failed");
+    }
+  },
+
+  // register new user
   async register(userData: UserCreate): Promise<ApiResponse<UserFull>> {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/users/register`,
-        userData,
-        {
-          headers: getHeaders(),
-        }
-      );
+      const response = await apiClient.post("/users/register", userData);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Registration failed");
@@ -52,26 +79,9 @@ export const usersApi = {
   // login
   async login(body: UserLogin): Promise<ApiResponse<LoginResponse>> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/login`, body, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const apiResponse = response.data;
-
-      if (apiResponse.success && apiResponse.data) {
-        return {
-          data: apiResponse.data,
-          message: apiResponse.message,
-          status: apiResponse.status,
-        };
-      }
-
-      return apiResponse;
+      const response = await apiClient.post("/users/login", body);
+      return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem("access_token");
-        window.location.href = "/";
-      }
       throw new Error(error.response?.data?.message || "Login failed");
     }
   },
@@ -82,19 +92,11 @@ export const usersApi = {
     limit: number = 100
   ): Promise<ApiResponse<UserFull[]>> {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/users/?skip=${skip}&limit=${limit}`,
-        {
-          headers: getHeaders(),
-        }
+      const response = await apiClient.get(
+        `/users/?skip=${skip}&limit=${limit}`
       );
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
-      }
       throw new Error(error.response?.data?.message || "Failed to fetch users");
     }
   },
@@ -102,16 +104,9 @@ export const usersApi = {
   // get user by id
   async getUserById(userId: number): Promise<ApiResponse<UserFull>> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/users/${userId}`, {
-        headers: getHeaders(),
-      });
-      return response.data;
+      const response = await apiClient.get(`/users/${userId}`);
+      return response.data; // { status: 200, message: "User retrieved successfully", data: UserFull }
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
-      }
       throw new Error(error.response?.data?.message || "Failed to fetch user");
     }
   },
@@ -122,8 +117,7 @@ export const usersApi = {
     newRoleId: number
   ): Promise<ApiResponse<UserFull>> {
     try {
-      const response = await axios.put(`${API_BASE_URL}/users/role`, null, {
-        headers: getHeaders(),
+      const response = await apiClient.put("/users/role", null, {
         params: {
           user_id: userId,
           new_role_id: newRoleId,
@@ -131,45 +125,34 @@ export const usersApi = {
       });
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 401) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
-        window.location.href = "/";
-      }
       throw new Error(error.response?.data?.message || "Failed to change role");
     }
   },
 };
 
 // =============================================
-//  Auth Utils
+// Auth Utils
 // =============================================
 
 export const authUtils = {
-  saveAuth(loginData: LoginResponse): void {
-    localStorage.setItem("access_token", loginData.access_token);
-    localStorage.setItem("user", JSON.stringify(loginData.user));
-  },
-
-  logout(): void {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-  },
-
-  getCurrentUser(): UserFull | null {
-    try {
-      const userStr = localStorage.getItem("user");
-      return userStr ? JSON.parse(userStr) : null;
-    } catch {
-      return null;
-    }
-  },
-
+  // check if authenticated (from localStorage)
   isAuthenticated(): boolean {
     return Boolean(localStorage.getItem("access_token"));
   },
 
+  // get current user (from Redux)
+  getCurrentUser(): UserFull | null {
+    const state = store.getState();
+    return state.user.currentUser;
+  },
+
+  // get token (from localStorage)
   getToken(): string | null {
     return localStorage.getItem("access_token");
+  },
+
+  // logout (from Redux)
+  logout(): void {
+    store.dispatch(logout());
   },
 };

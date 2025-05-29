@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { useLogin, useCurrentUser } from "@/service/users/usersQuery";
+import { useAuth } from "@/service/users/usersQuery";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,8 @@ import { Button } from "@/ui/shadCN/button";
 import { Input } from "@/ui/shadCN/input";
 import { Label } from "@/ui/shadCN/label";
 import { Separator } from "@/ui/shadCN/separator";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import DotsLoader from "@/assets/animations/DotsLoader";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ interface LoginModalProps {
   openSignUpModal?: () => void;
 }
 
-// Define the validation schema using Zod
+// Validation schema
 const loginSchema = z.object({
   email: z.string().email({ message: "Valid email is required" }),
   password: z.string().min(1, { message: "Password is required" }),
@@ -45,20 +46,24 @@ export const LoginModal = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isFailed, setIsFailed] = useState(false);
 
-  // Use the proper hooks from our new structure
-  const loginMutation = useLogin();
-  const { error: authError } = useCurrentUser();
+  const [loginStatus, setLoginStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
+
+  const { login, loginLoading } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setIsFailed(false);
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+    if (loginStatus.type) {
+      setLoginStatus({ type: null, message: "" });
     }
   };
 
@@ -88,29 +93,28 @@ export const LoginModal = ({
       return;
     }
 
-    try {
-      // Use the login mutation from our new structure
-      const response = await loginMutation.mutateAsync({
-        email: formData.email,
-        password: formData.password,
+    setLoginStatus({ type: null, message: "" });
+
+    const success = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (success) {
+      setLoginStatus({
+        type: "success",
+        message: t("loginModal.loginSuccess"),
       });
 
-      // If we reach here, login was successful
-      if (response.success) {
-        onClose();
-        // Reset form
-        setFormData({ email: "", password: "" });
-        setErrors({});
-        setIsFailed(false);
-
-        // Navigate to dashboard after successful login
-        navigate("/");
-      } else {
-        setIsFailed(true);
-      }
-    } catch (error) {
-      setIsFailed(true);
-      console.error("Login error:", error);
+      setTimeout(() => {
+        handleClose();
+        navigate("/home");
+      }, 3000);
+    } else {
+      setLoginStatus({
+        type: "error",
+        message: t("loginModal.loginError"),
+      });
     }
   };
 
@@ -118,20 +122,36 @@ export const LoginModal = ({
     setShowPassword(!showPassword);
   };
 
+  const handleClose = () => {
+    setFormData({ email: "", password: "" });
+    setErrors({});
+    setShowPassword(false);
+    setLoginStatus({ type: null, message: "" });
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md text-foreground gradient-brand">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-[95vw] max-w-2xl text-foreground gradient-brand">
+        <DialogHeader className="space-y-4 md:space-y-6">
+          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-white text-center">
             {t("loginModal.login")}
           </DialogTitle>
-          <DialogDescription className="text-white/80 flex items-center">
-            <p className="text-sm">{t("loginModal.dontHaveAccountYet")}</p>
-            <Separator orientation="vertical" className="mx-2 bg-white/30" />
+          <DialogDescription className="text-white/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+            <p className="text-base md:text-lg lg:text-xl">
+              {t("loginModal.dontHaveAccountYet")}
+            </p>
+            <Separator
+              orientation="vertical"
+              className="hidden sm:block mx-2 bg-white/30 h-6"
+            />
             {openSignUpModal && (
               <p
-                className="text-sm hover:underline hover:text-white/60 cursor-pointer"
-                onClick={openSignUpModal}
+                className="text-base md:text-lg lg:text-xl hover:underline hover:text-white/60 cursor-pointer"
+                onClick={() => {
+                  handleClose();
+                  openSignUpModal();
+                }}
               >
                 {t("loginModal.clickHere")}
               </p>
@@ -140,13 +160,6 @@ export const LoginModal = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Display auth error if it exists */}
-          {authError && (
-            <div className="p-3 bg-destructive/10 border border-destructive text-destructive rounded-md text-sm">
-              {authError.message || "שגיאה באימות"}
-            </div>
-          )}
-
           {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white">
@@ -160,7 +173,7 @@ export const LoginModal = ({
               value={formData.email}
               onChange={handleChange}
               placeholder={t("form.email")}
-              disabled={loginMutation.isPending}
+              disabled={loginLoading}
             />
             {errors.email && (
               <p className="text-xs text-red-300">{errors.email}</p>
@@ -190,7 +203,7 @@ export const LoginModal = ({
                 value={formData.password}
                 onChange={handleChange}
                 placeholder={t("form.password")}
-                disabled={loginMutation.isPending}
+                disabled={loginLoading}
               />
               <Button
                 variant="ghost"
@@ -198,7 +211,7 @@ export const LoginModal = ({
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={loginMutation.isPending}
+                disabled={loginLoading}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </Button>
@@ -208,10 +221,28 @@ export const LoginModal = ({
             )}
           </div>
 
-          {/* Login Error Message */}
-          {isFailed && (
-            <div className="p-3 bg-destructive/10 border border-destructive text-destructive rounded-md text-sm">
-              {t("loginModal.emailOrPasswordError")}
+          {loginStatus.type && (
+            <div
+              className={`flex items-center gap-2 p-3 rounded-md ${
+                loginStatus.type === "success"
+                  ? "bg-green-500/20 border border-green-500/30"
+                  : "bg-red-500/20 border border-red-500/30"
+              }`}
+            >
+              {loginStatus.type === "success" ? (
+                <CheckCircle className="w-4 h-4 text-green-400" />
+              ) : (
+                <XCircle className="w-4 h-4 text-red-400" />
+              )}
+              <p
+                className={`text-sm ${
+                  loginStatus.type === "success"
+                    ? "text-green-300"
+                    : "text-red-300"
+                }`}
+              >
+                {loginStatus.message}
+              </p>
             </div>
           )}
 
@@ -219,21 +250,25 @@ export const LoginModal = ({
             <Button
               variant="outline"
               type="button"
-              onClick={onClose}
-              disabled={loginMutation.isPending}
+              onClick={handleClose}
+              disabled={loginLoading || loginStatus.type === "success"}
               className="flex-1 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
             >
               {t("common.cancel")}
             </Button>
             <Button
               type="submit"
-              disabled={loginMutation.isPending}
+              disabled={loginLoading || loginStatus.type === "success"}
               className="flex-1 bg-white text-pgreendark hover:bg-white/90"
             >
-              {loginMutation.isPending ? (
+              {loginLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  מתחבר...
+                  <DotsLoader className="mr-2 h-4 w-4 animate-spin" />
+                </>
+              ) : loginStatus.type === "success" ? (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  {t("common.success")}
                 </>
               ) : (
                 t("common.submit")

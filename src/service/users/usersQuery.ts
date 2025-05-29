@@ -1,10 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
 import { authUtils, usersApi } from "./usersApi";
 import {
-  type UserCreate,
-  type UserLogin,
-  //   type UserFull,
-} from "@/types/userTypes";
+  loginSuccess,
+  loginStart,
+  loginFailure,
+  updateUser,
+  logout,
+  clearError,
+  selectCurrentUser,
+  selectIsAuthenticated,
+  selectUserLoading,
+  selectUserError,
+  initializeAuth,
+} from "@/store/slices/userSlice";
+import { type UserCreate, type UserLogin } from "@/types/userTypes";
+import { type AppDispatch } from "@/store/store";
+import { useNavigate } from "react-router-dom";
 
 // =============================================
 // Query Keys
@@ -21,12 +33,9 @@ export const USER_QUERY_KEYS = {
 };
 
 // =============================================
-// Query Hooks (לקריאת נתונים)
+// Query Hooks
 // =============================================
-
-/**
- * Hook לקבלת כל המשתמשים עם pagination
- */
+//get all users
 export const useUsers = (skip: number = 0, limit: number = 100) => {
   return useQuery({
     queryKey: USER_QUERY_KEYS.list({ skip, limit }),
@@ -34,14 +43,12 @@ export const useUsers = (skip: number = 0, limit: number = 100) => {
       const response = await usersApi.getAllUsers(skip, limit);
       return response.data || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 דקות
-    gcTime: 10 * 60 * 1000, // 10 דקות
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
-/**
- * Hook לקבלת משתמש ספציפי לפי ID
- */
+// get user by id
 export const useUser = (userId: number) => {
   return useQuery({
     queryKey: USER_QUERY_KEYS.detail(userId),
@@ -49,93 +56,98 @@ export const useUser = (userId: number) => {
       const response = await usersApi.getUserById(userId);
       return response.data;
     },
-    enabled: !!userId, // רק אם יש userId
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 };
 
-/**
- * Hook לקבלת המשתמש הנוכחי (מתעדכן מהשרת)
- */
+// get current user
 export const useCurrentUser = () => {
+  const currentUser = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const error = useSelector(selectUserError);
+  const navigate = useNavigate();
+
   return useQuery({
     queryKey: USER_QUERY_KEYS.current(),
     queryFn: async () => {
-      const currentUser = authUtils.getCurrentUser();
-      if (!currentUser) return null;
-
-      // מעדכן מהשרת
-      const response = await usersApi.getUserById(currentUser.id);
-      return response.data;
+      const response = await usersApi.auth();
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      throw new Error(response.message || "Failed to get current user");
     },
-    enabled: authUtils.isAuthenticated(),
-    staleTime: 2 * 60 * 1000, // 2 דקות
+    initialData: currentUser,
+    enabled: isAuthenticated,
+    staleTime: 2 * 60 * 1000,
     retry: (failureCount, error: any) => {
-      if (error?.response?.status === 401) return false;
+      if (error?.response?.status === 401) {
+        navigate("/");
+        return false;
+      }
       return failureCount < 3;
+    },
+    meta: {
+      errorMessage: error,
     },
   });
 };
 
 // =============================================
-// Mutation Hooks (לעדכון נתונים)
+// Mutation Hooks
 // =============================================
 
-/**
- * Hook להרשמת משתמש חדש
- */
+// register user
 export const useRegisterUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (userData: UserCreate) => usersApi.register(userData),
     onSuccess: (data) => {
-      console.log(data);
-      //   toast.success("נרשמת בהצלחה!");
-      // מעדכן רשימת משתמשים
-      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.lists() });
-    },
-    onError: (error: any) => {
-      console.log(error);
-      //   toast.error(error.message || "שגיאה בהרשמה");
-    },
-  });
-};
-
-/**
- * Hook להתחברות
- */
-export const useLogin = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (credentials: UserLogin) => usersApi.login(credentials),
-    onSuccess: (data) => {
-      if (data.data) {
-        // שמירת נתוני התחברות
-        authUtils.saveAuth(data.data);
-
-        // toast.success("התחברת בהצלחה!");
-        console.log(data);
-
-        // שומר המשתמש הנוכחי ב-cache
-        queryClient.setQueryData(USER_QUERY_KEYS.current(), data.data.user);
-
-        // מעדכן כל queries של משתמשים
-        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.all });
+      if (data.status === 201) {
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.lists() }); //refetch the users list
       }
     },
     onError: (error: any) => {
-      //   toast.error(error.message || "שגיאה בהתחברות");
-      console.log(error);
+      console.log("error", error);
     },
   });
 };
 
-/**
- * Hook לשינוי תפקיד משתמש
- */
+// login user
+export const useLogin = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (credentials: UserLogin) => {
+      dispatch(loginStart());
+      const response = await usersApi.login(credentials);
+      return response;
+    },
+    onSuccess: (data) => {
+      if (data.status === 200 && data.data) {
+        dispatch(
+          loginSuccess({
+            user: data.data.user,
+            token: data.data.access_token,
+          })
+        );
+
+        queryClient.setQueryData(USER_QUERY_KEYS.current(), data.data.user); //update the current user in the query cache
+
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.all }); //refetch the users list
+      }
+    },
+    onError: (error: any) => {
+      dispatch(loginFailure(error.message || "Error logging in"));
+    },
+  });
+};
+
+// change user role
 export const useChangeUserRole = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -147,95 +159,109 @@ export const useChangeUserRole = () => {
       newRoleId: number;
     }) => usersApi.changeRole(userId, newRoleId),
     onSuccess: (data, variables) => {
-      //   toast.success("תפקיד המשתמש עודכן בהצלחה!");
-      console.log(data);
+      if (data.status === 200) {
+        console.log("data", data);
 
-      // מעדכן המשתמש הספציפי ב-cache
-      if (data.data) {
-        queryClient.setQueryData(
-          USER_QUERY_KEYS.detail(variables.userId),
-          data
-        );
+        if (data.data) {
+          queryClient.setQueryData(
+            USER_QUERY_KEYS.detail(variables.userId),
+            data
+          ); //update the user detail in the query cache
+
+          const currentUser = authUtils.getCurrentUser();
+          if (currentUser && currentUser.id === variables.userId) {
+            dispatch(updateUser(data.data)); //update the current user in the redux store
+          }
+        }
+
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.lists() }); //refetch the users list
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.current() }); //refetch the current user
       }
-
-      // מעדכן רשימות ומשתמש נוכחי
-      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEYS.current() });
     },
     onError: (error: any) => {
-      console.log(error);
-      //   toast.error(error.message || "שגיאה בעדכון תפקיד המשתמש");
+      console.log("error", error);
     },
   });
 };
 
-/**
- * Hook להתנתקות
- */
+// logout user
 export const useLogout = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => {
-      authUtils.logout();
+      dispatch(logout()); //update the user state in the redux store
       return Promise.resolve();
     },
     onSuccess: () => {
-      //   toast.success("התנתקת בהצלחה!");
-      console.log("התנתקת בהצלחה!");
-      // מנקה את כל ה-cache
-      queryClient.clear();
-      // מפנה לדף התחברות
-      window.location.href = "/login";
+      console.log("Logged out successfully");
+      queryClient.clear(); //clear the query cache
+      window.location.href = "/"; //redirect to the landing page
+    },
+  });
+};
+
+// initialize auth
+export const useInitializeAuth = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  return useMutation({
+    mutationFn: () => dispatch(initializeAuth()), //initialize the auth state in the redux store
+    onSuccess: () => {
+      console.log("Auth initialized successfully");
+    },
+    onError: (error) => {
+      console.log("Auth initialization failed:", error);
     },
   });
 };
 
 // =============================================
-// Composed Auth Hook (משלב הכל)
+// Custom Auth Hook
 // =============================================
 
 export const useAuth = () => {
-  const { data: user, isLoading, error } = useCurrentUser();
+  const dispatch = useDispatch<AppDispatch>();
+  const currentUser = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectUserLoading);
+  const error = useSelector(selectUserError);
+
   const loginMutation = useLogin();
   const logoutMutation = useLogout();
 
   const login = async (credentials: UserLogin) => {
     try {
       const result = await loginMutation.mutateAsync(credentials);
-      return result.data;
+      return result.status === 200;
     } catch (error) {
       return false;
     }
   };
 
-  const logout = () => {
+  const logoutUser = () => {
     logoutMutation.mutate();
   };
 
+  const clearUserError = () => {
+    dispatch(clearError());
+  };
+
+  const initAuth = () => {
+    dispatch(initializeAuth());
+  };
+
   return {
-    user: user || null,
-    loading: isLoading,
+    user: currentUser,
+    loading: loading || loginMutation.isPending,
     error,
     login,
-    logout,
-    isAuthenticated: authUtils.isAuthenticated() && !!user,
+    logout: logoutUser,
+    clearError: clearUserError,
+    initializeAuth: initAuth,
+    isAuthenticated,
     loginLoading: loginMutation.isPending,
     logoutLoading: logoutMutation.isPending,
   };
-};
-
-// =============================================
-// Helper Functions
-// =============================================
-
-/**
- * פונקציה לטעינה מוקדמת של משתמש
- */
-export const prefetchUser = async (queryClient: any, userId: number) => {
-  await queryClient.prefetchQuery({
-    queryKey: USER_QUERY_KEYS.detail(userId),
-    queryFn: () => usersApi.getUserById(userId),
-    staleTime: 5 * 60 * 1000,
-  });
 };
