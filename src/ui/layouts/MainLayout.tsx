@@ -2,35 +2,84 @@ import Nav from "../shared/nav/Nav";
 import fieldBg from "@/assets/images/field-bg.png";
 import { LoginModal } from "../shared/nav/LoginModal";
 import { SignUpModal } from "../shared/nav/SignupModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import {
   selectIsAuthenticated,
   selectUserLoading,
+  selectCurrentUser,
 } from "@/store/slices/userSlice";
+import { logout } from "@/store/slices/userSlice";
+import { useAuth } from "@/service/users/usersQuery";
+import { usersApi } from "@/service/users/usersApi";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
-  // protect
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isLoading = useAppSelector(selectUserLoading);
+  const currentUser = useAppSelector(selectCurrentUser);
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const { logout: authLogout } = useAuth();
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true);
-    console.log("openLoginModal");
   };
 
   const openSignUpModal = () => {
     setIsSignUpModalOpen(true);
-    console.log("openSignUpModal");
   };
+
+  const handleLogout = () => {
+    authLogout();
+  };
+
+  //token check
+  useEffect(() => {
+    const checkTokenValidity = async () => {
+      if (isAuthenticated) {
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+          console.log("🔓 No token found - logging out");
+          dispatch(logout());
+          return;
+        }
+
+        try {
+          const response = await usersApi.auth();
+
+          if (response.status !== 200) {
+            console.log("🔓 Token invalid - logging out");
+            dispatch(logout());
+          } else {
+            console.log("✅ Token is valid");
+          }
+        } catch (error: any) {
+          if (error?.response?.status === 401) {
+            console.log("🔓 Token expired - logging out");
+            dispatch(logout());
+          } else {
+            console.log("🔓 Auth check failed - logging out");
+            dispatch(logout());
+          }
+        }
+      }
+    };
+
+    checkTokenValidity();
+  }, [location.pathname, isAuthenticated, dispatch]);
 
   const publicRoutes = ["/", "/about"];
   const isPublicRoute = publicRoutes.includes(location.pathname);
+
+  const protectedRoutes = ["/home", "/profile", "/users", "/fields", "/clubs"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    location.pathname.startsWith(route)
+  );
 
   if (isPublicRoute) {
     return (
@@ -45,6 +94,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           <Nav
             openLoginModal={openLoginModal}
             openSignUpModal={openSignUpModal}
+            isAuthenticated={isAuthenticated}
+            currentUser={currentUser}
+            onLogout={handleLogout}
           />
           <LoginModal
             isOpen={isLoginModalOpen}
@@ -62,7 +114,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // loading wait for connected user
   if (isLoading) {
     return (
       <div className="fixed inset-0 overflow-hidden">
@@ -79,12 +130,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // if not connected - redirect to home page
-  if (!isAuthenticated) {
+  if (isProtectedRoute && !isAuthenticated) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // if connected - show the protected page
   return (
     <div className="fixed inset-0 overflow-hidden">
       <div
@@ -97,6 +146,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         <Nav
           openLoginModal={openLoginModal}
           openSignUpModal={openSignUpModal}
+          isAuthenticated={isAuthenticated}
+          currentUser={currentUser}
+          onLogout={handleLogout}
         />
         <LoginModal
           isOpen={isLoginModalOpen}
