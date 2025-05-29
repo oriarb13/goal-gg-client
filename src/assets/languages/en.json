@@ -4,7 +4,8 @@
     "loading": "Loading...",
     "cancel": "Cancel",
     "submit": "Submit",
-    "auth": "Authentication error"
+    "auth": "Authentication error",
+    "success": "Success"
   },
   "snackbar": {
     "sessionExpired": "Session expired, please log in again",
@@ -43,7 +44,39 @@
     "clickHere": "Click here to register",
     "login": "Login",
     "register": "Register",
-    "emailOrPasswordError": "Email or password is incorrect"
+    "emailOrPasswordError": "Email or password is incorrect",
+    "loginSuccess": "Login successful",
+    "loginError": "Login failed"
+  },
+  "signUpModal": {
+    "title": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "sportCategoryLabel": "Sport Category",
+    "sportCategoryPlaceholder": "Select sport category",
+    "sportFootball": "Football",
+    "sportBasketball": "Basketball",
+    "yearOfBirthLabel": "Year of Birth",
+    "yearOfBirthPlaceholder": "Select year of birth",
+    "countryLabel": "Country",
+    "countryPlaceholder": "Select country",
+    "cityLabel": "City",
+    "cityPlaceholder": "Select city",
+    "agreeToTerms": "I agree to the terms and conditions",
+    "signUpSuccess": "Registration successful",
+    "signUpError": "Registration failed"
   },
   "signup": {
     "alreadyHaveAccount": "Already have an account?",

@@ -50,14 +50,16 @@ export const CitySelector = ({
       // Constructing query parameters
       const params = new URLSearchParams({
         access_token:
-          process.env.NEXT_PUBLIC_MAPBOX_TOKEN ||
+          import.meta.env.VITE_MAPBOX_TOKEN ||
           "pk.eyJ1IjoiZ29hbGdnOCIsImEiOiJjbWEwMzJjbm4wcDd4MmlzOHY2dWNqeDQyIn0.V2S6HnhBZYIb2YXjFptd3w",
         types: "place",
         country: countryCode.toLowerCase(),
       });
 
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params.toString()}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          query
+        )}.json?${params.toString()}`
       );
 
       if (!response.ok) {

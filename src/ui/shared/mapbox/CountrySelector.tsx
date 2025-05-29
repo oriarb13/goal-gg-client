@@ -46,7 +46,10 @@ export const CountrySelector = ({
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
           query
-        )}.json?types=country&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "pk.eyJ1IjoiZ29hbGdnOCIsImEiOiJjbWEwMzJjbm4wcDd4MmlzOHY2dWNqeDQyIn0.V2S6HnhBZYIb2YXjFptd3w"}`
+        )}.json?types=country&access_token=${
+          import.meta.env.VITE_MAPBOX_TOKEN ||
+          "pk.eyJ1IjoiZ29hbGdnOCIsImEiOiJjbWEwMzJjbm4wcDd4MmlzOHY2dWNqeDQyIn0.V2S6HnhBZYIb2YXjFptd3w"
+        }`
       );
 
       if (!response.ok) {

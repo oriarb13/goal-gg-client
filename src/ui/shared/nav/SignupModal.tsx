@@ -21,7 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/shadCN/select";
-import { Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import DotsLoader from "@/assets/animations/DotsLoader";
 import { cn } from "@/lib/utils";
 import { useRegisterUser } from "@/service/users/usersQuery";
 import { PhoneInput } from "../phone-input";
@@ -34,13 +35,11 @@ interface SignUpModalProps {
   openLoginModal: () => void;
 }
 
-// Sport category enum (adjust to match your backend)
 const SportCategoryEnum = {
   FOOTBALL: "FOOTBALL",
   BASKETBALL: "BASKETBALL",
 } as const;
 
-// Define the validation schema using Zod
 const signUpSchema = z
   .object({
     firstName: z.string().min(2, { message: "First name is required" }),
@@ -87,8 +86,8 @@ export const SignUpModal = ({
     firstName: "",
     lastName: "",
     phone: "",
-    phonePrefix: "+972", // Default phone prefix
-    phoneNumber: "", // Actual phone number
+    phonePrefix: "+972",
+    phoneNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -102,17 +101,24 @@ export const SignUpModal = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
-  // Use the register mutation from our new structure
+  const [signUpStatus, setSignUpStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
+
   const registerMutation = useRegisterUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+    if (signUpStatus.type) {
+      setSignUpStatus({ type: null, message: "" });
     }
   };
 
@@ -151,7 +157,6 @@ export const SignUpModal = ({
       ...prev,
       country: value,
       countryCode: countryCode || "",
-      // Clear city when country changes
       city: "",
     }));
 
@@ -208,7 +213,7 @@ export const SignUpModal = ({
       countryCode: "",
     });
     setErrors({});
-    setIsSuccess(false);
+    setSignUpStatus({ type: null, message: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,8 +223,9 @@ export const SignUpModal = ({
       return;
     }
 
+    setSignUpStatus({ type: null, message: "" });
+
     try {
-      // Prepare the data for submission matching your API structure
       const submitData = {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -229,7 +235,7 @@ export const SignUpModal = ({
           prefix: formData.phonePrefix,
           number: formData.phoneNumber,
         },
-        sport_category: formData.sportCategory,
+        sport_category: formData.sportCategory.toLowerCase(),
         year_of_birth: parseInt(formData.yearOfBirth, 10),
         country: formData.country,
         city: formData.city,
@@ -237,18 +243,22 @@ export const SignUpModal = ({
 
       const response = await registerMutation.mutateAsync(submitData);
 
-      if (response.success) {
-        setIsSuccess(true);
-        // Show success message for 3 seconds then switch to login
+      if (response.status === 201) {
+        setSignUpStatus({
+          type: "success",
+          message: t("signUpModal.signUpSuccess"),
+        });
+
         setTimeout(() => {
-          resetForm();
-          onClose();
+          handleClose();
           openLoginModal();
         }, 3000);
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      // Error handling is done by the mutation's onError
+      setSignUpStatus({
+        type: "error",
+        message: t("signUpModal.signUpError"),
+      });
     }
   };
 
@@ -257,101 +267,96 @@ export const SignUpModal = ({
     onClose();
   };
 
-  // Generate years for dropdown (from current year - 100 to current year - 5)
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 80 }, (_, i) =>
     (currentYear - 5 - i).toString()
   ).reverse();
 
-  // Show success state
-  if (isSuccess) {
-    return (
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md gradient-brand">
-          <div className="flex flex-col items-center justify-center py-8 text-center text-white">
-            <CheckCircle className="h-16 w-16 text-white mb-4" />
-            <DialogTitle className="text-xl font-bold mb-2">
-              {t("signup.userCreatedSuccessfully")}
-            </DialogTitle>
-            <DialogDescription className="text-white/80 mb-4">
-              {t("signup.redirectingToLogin")}
-            </DialogDescription>
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">מעביר לדף התחברות...</span>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto text-foreground gradient-brand sm:max-w-lg">
-        <DialogHeader className="px-1">
-          <DialogTitle className="text-xl font-bold text-white">
-            {t("signup.title")}
+      <DialogContent className="w-fit max-w-4xl text-foreground gradient-brand max-h-[85vh] overflow-y-auto overflow-x-hidden mt-20">
+        <DialogHeader className="space-y-4 md:space-y-6">
+          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-white text-center">
+            {t("signUpModal.title")}
           </DialogTitle>
-          <DialogDescription className="text-white/80 flex items-center">
-            <p className="text-sm">{t("signup.alreadyHaveAccount")}</p>
-            <Separator orientation="vertical" className="mx-2 bg-white/30" />
+          <DialogDescription className="text-white/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+            <p className="text-base md:text-lg lg:text-xl">
+              {t("signUpModal.alreadyHaveAccount")}
+            </p>
+            <Separator
+              orientation="vertical"
+              className="hidden sm:block mx-2 bg-white/30 h-6"
+            />
             <p
-              className="text-sm hover:underline hover:text-white/60 cursor-pointer"
-              onClick={openLoginModal}
+              className="text-base md:text-lg lg:text-xl hover:underline hover:text-white/60 cursor-pointer"
+              onClick={() => {
+                handleClose();
+                openLoginModal();
+              }}
             >
-              {t("signup.login")}
+              {t("signUpModal.login")}
             </p>
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 px-1">
-          {/* Name Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-white">
-                {t("signup.firstNameLabel")}
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 px-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="firstName"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.firstNameLabel")}
               </Label>
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
                 id="firstName"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                placeholder={t("signup.firstNamePlaceholder")}
+                placeholder={t("signUpModal.firstNamePlaceholder")}
                 disabled={registerMutation.isPending}
               />
               {errors.firstName && (
-                <p className="text-xs text-red-300">{errors.firstName}</p>
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.firstName}
+                </p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-white">
-                {t("signup.lastNameLabel")}
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="lastName"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.lastNameLabel")}
               </Label>
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                placeholder={t("signup.lastNamePlaceholder")}
+                placeholder={t("signUpModal.lastNamePlaceholder")}
                 disabled={registerMutation.isPending}
               />
               {errors.lastName && (
-                <p className="text-xs text-red-300">{errors.lastName}</p>
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.lastName}
+                </p>
               )}
             </div>
           </div>
 
-          {/* Phone Field */}
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-white">
-              {t("signup.phoneLabel")}
+          <div className="space-y-3 md:space-y-4">
+            <Label
+              htmlFor="phone"
+              className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+            >
+              {t("signUpModal.phoneLabel")}
             </Label>
             <PhoneInput
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
               value={formData.phone}
               onChange={handlePhoneChange}
               international
@@ -360,89 +365,111 @@ export const SignUpModal = ({
               disabled={registerMutation.isPending}
             />
             {errors.phone && (
-              <p className="text-xs text-red-300">{errors.phone}</p>
+              <p className="text-sm md:text-base lg:text-lg text-red-300">
+                {errors.phone}
+              </p>
             )}
           </div>
 
-          {/* Email Field */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">
-              {t("signup.emailLabel")}
+          <div className="space-y-3 md:space-y-4">
+            <Label
+              htmlFor="email"
+              className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+            >
+              {t("signUpModal.emailLabel")}
             </Label>
             <Input
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
               id="email"
               name="email"
               type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder={t("signup.emailPlaceholder")}
+              placeholder={t("signUpModal.emailPlaceholder")}
               disabled={registerMutation.isPending}
             />
             {errors.email && (
-              <p className="text-xs text-red-300">{errors.email}</p>
+              <p className="text-sm md:text-base lg:text-lg text-red-300">
+                {errors.email}
+              </p>
             )}
           </div>
 
-          {/* Password Fields */}
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-white">
-              {t("signup.passwordLabel")}
-            </Label>
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="password"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.passwordLabel")}
+              </Label>
+              <div className="relative">
+                <Input
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6 pr-12 md:pr-16"
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder={t("signUpModal.passwordPlaceholder")}
+                  disabled={registerMutation.isPending}
+                />
+                <Button
+                  variant="ghost"
+                  className="absolute right-0 top-0 h-full px-3 md:px-4 text-white/70 hover:text-white hover:bg-transparent"
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  disabled={registerMutation.isPending}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} className="md:w-6 md:h-6" />
+                  ) : (
+                    <Eye size={20} className="md:w-6 md:h-6" />
+                  )}
+                </Button>
+              </div>
+              {errors.password && (
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.confirmPasswordLabel")}
+              </Label>
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 pr-10"
-                id="password"
-                name="password"
+                className={cn(
+                  "bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6",
+                  errors.confirmPassword && "border-red-300"
+                )}
+                id="confirmPassword"
+                name="confirmPassword"
                 type={showPassword ? "text" : "password"}
-                value={formData.password}
+                value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder={t("signup.passwordPlaceholder")}
+                placeholder={t("signUpModal.confirmPasswordPlaceholder")}
                 disabled={registerMutation.isPending}
               />
-              <Button
-                variant="ghost"
-                className="absolute right-0 top-0 h-full px-3 text-white/70 hover:text-white hover:bg-transparent"
-                type="button"
-                onClick={togglePasswordVisibility}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={registerMutation.isPending}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </Button>
-            </div>
-            {errors.password && (
-              <p className="text-xs text-red-300">{errors.password}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-white">
-              {t("signup.confirmPasswordLabel")}
-            </Label>
-            <Input
-              className={cn(
-                "bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40",
-                errors.confirmPassword && "border-red-300"
+              {errors.confirmPassword && (
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.confirmPassword}
+                </p>
               )}
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showPassword ? "text" : "password"}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder={t("signup.confirmPasswordPlaceholder")}
-              disabled={registerMutation.isPending}
-            />
-            {errors.confirmPassword && (
-              <p className="text-xs text-red-300">{errors.confirmPassword}</p>
-            )}
+            </div>
           </div>
 
-          {/* Sport Category and Year */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="sportCategory" className="text-white">
-                {t("signup.sportCategoryLabel")}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="sportCategory"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.sportCategoryLabel")}
               </Label>
               <Select
                 value={formData.sportCategory}
@@ -451,28 +478,33 @@ export const SignUpModal = ({
                 }
                 disabled={registerMutation.isPending}
               >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                <SelectTrigger className="bg-white/10 border-white/20 text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
                   <SelectValue
-                    placeholder={t("signup.sportCategoryPlaceholder")}
+                    placeholder={t("signUpModal.sportCategoryPlaceholder")}
                   />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={SportCategoryEnum.FOOTBALL}>
-                    {t("signup.sportFootball")}
+                    {t("signUpModal.sportFootball")}
                   </SelectItem>
                   <SelectItem value={SportCategoryEnum.BASKETBALL}>
-                    {t("signup.sportBasketball")}
+                    {t("signUpModal.sportBasketball")}
                   </SelectItem>
                 </SelectContent>
               </Select>
               {errors.sportCategory && (
-                <p className="text-xs text-red-300">{errors.sportCategory}</p>
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.sportCategory}
+                </p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="yearOfBirth" className="text-white">
-                {t("signup.yearOfBirthLabel")}
+            <div className="space-y-3 md:space-y-4">
+              <Label
+                htmlFor="yearOfBirth"
+                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              >
+                {t("signUpModal.yearOfBirthLabel")}
               </Label>
               <Select
                 value={formData.yearOfBirth}
@@ -481,9 +513,9 @@ export const SignUpModal = ({
                 }
                 disabled={registerMutation.isPending}
               >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                <SelectTrigger className="bg-white/10 border-white/20 text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
                   <SelectValue
-                    placeholder={t("signup.yearOfBirthPlaceholder")}
+                    placeholder={t("signUpModal.yearOfBirthPlaceholder")}
                   />
                 </SelectTrigger>
                 <SelectContent className="max-h-60 overflow-y-auto">
@@ -495,20 +527,20 @@ export const SignUpModal = ({
                 </SelectContent>
               </Select>
               {errors.yearOfBirth && (
-                <p className="text-xs text-red-300">{errors.yearOfBirth}</p>
+                <p className="text-sm md:text-base lg:text-lg text-red-300">
+                  {errors.yearOfBirth}
+                </p>
               )}
             </div>
           </div>
 
-          {/* Country and City */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <CountrySelector
               value={formData.country}
               onChange={handleCountryChange}
               error={errors.country}
-              label="signup.countryLabel"
-              placeholder="signup.countryPlaceholder"
-              // disabled={registerMutation.isPending}
+              label="signUpModal.countryLabel"
+              placeholder="signUpModal.countryPlaceholder"
             />
 
             <CitySelector
@@ -516,53 +548,85 @@ export const SignUpModal = ({
               onChange={handleCityChange}
               countryCode={formData.countryCode}
               error={errors.city}
-              label="signup.cityLabel"
-              placeholder="signup.cityPlaceholder"
+              label="signUpModal.cityLabel"
+              placeholder="signUpModal.cityPlaceholder"
               disabled={!formData.countryCode || registerMutation.isPending}
             />
           </div>
 
-          {/* Terms Checkbox */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3 md:space-x-4">
             <Checkbox
               id="agreeToTerms"
               checked={formData.agreeToTerms}
               onCheckedChange={handleCheckboxChange}
               disabled={registerMutation.isPending}
-              className="border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-pgreendark"
+              className="border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-pgreendark w-5 h-5 md:w-6 md:h-6"
             />
             <Label
               htmlFor="agreeToTerms"
-              className="text-sm font-normal leading-none text-white"
+              className="text-base md:text-lg lg:text-xl font-normal leading-none text-white"
             >
-              {t("signup.agreeToTerms")}
+              {t("signUpModal.agreeToTerms")}
             </Label>
           </div>
           {errors.agreeToTerms && (
-            <p className="text-xs text-red-300">{errors.agreeToTerms}</p>
+            <p className="text-sm md:text-base lg:text-lg text-red-300">
+              {errors.agreeToTerms}
+            </p>
           )}
 
-          {/* Submit Buttons */}
-          <DialogFooter className="sm:justify-between mt-6 gap-3">
+          {signUpStatus.type && (
+            <div
+              className={`flex items-center gap-3 md:gap-4 p-4 md:p-6 rounded-lg ${
+                signUpStatus.type === "success"
+                  ? "bg-green-500/20 border border-green-500/30"
+                  : "bg-red-500/20 border border-red-500/30"
+              }`}
+            >
+              {signUpStatus.type === "success" ? (
+                <CheckCircle className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-green-400" />
+              ) : (
+                <XCircle className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-red-400" />
+              )}
+              <p
+                className={`text-base md:text-lg lg:text-xl ${
+                  signUpStatus.type === "success"
+                    ? "text-green-300"
+                    : "text-red-300"
+                }`}
+              >
+                {signUpStatus.message}
+              </p>
+            </div>
+          )}
+
+          <DialogFooter className="sm:justify-between mt-8 md:mt-10 gap-4 md:gap-6">
             <Button
               variant="outline"
               type="button"
               onClick={handleClose}
-              disabled={registerMutation.isPending}
-              className="flex-1 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+              disabled={
+                registerMutation.isPending || signUpStatus.type === "success"
+              }
+              className="flex-1 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
             >
               {t("common.cancel")}
             </Button>
-
             <Button
               type="submit"
-              disabled={registerMutation.isPending}
-              className="flex-1 bg-white text-pgreendark hover:bg-white/90"
+              disabled={
+                registerMutation.isPending || signUpStatus.type === "success"
+              }
+              className="flex-1 bg-white text-pgreendark hover:bg-white/90 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
             >
               {registerMutation.isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  נרשם...
+                  <DotsLoader className="mr-2 h-5 w-5 md:h-6 md:w-6 animate-spin" />
+                </>
+              ) : signUpStatus.type === "success" ? (
+                <>
+                  <CheckCircle className="mr-2 h-5 w-5 md:h-6 md:w-6" />
+                  {t("common.success")}
                 </>
               ) : (
                 t("common.submit")
