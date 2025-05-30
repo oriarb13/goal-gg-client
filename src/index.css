@@ -232,6 +232,17 @@ button:focus-visible {
 @layer utilities {
   /* gradients */
   .gradient-brand {
+    background: linear-gradient(
+      168deg,
+      #d6ce15 0%,
+      #d6ce15 30%,
+      #a4a71e 50%,
+      #53900f 80%,
+      #1f6521 100%
+    );
+  }
+
+  .gradient-brand-green {
     background: linear-gradient(135deg, var(--pgreen), var(--pgreendark));
   }
 

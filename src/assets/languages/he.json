@@ -4,89 +4,98 @@
     "loading": "טוען...",
     "cancel": "ביטול",
     "submit": "שלח",
-    "auth": "שגיאת אימות"
-  },
-  "snackbar": {
-    "sessionExpired": "הפעלת ההתחברות פגה, אנא התחבר מחדש",
-    "loginRequired": "עליך להתחבר כדי לגשת לדף זה",
-    "logoutSuccess": "התנתקת בהצלחה",
-    "authenticationFailed": "האימות נכשל",
-    "connectionError": "שגיאת התחברות",
-    "userCreationFailed": "יצירת המשתמש נכשלה",
-    "loginError": "דוא\"ל או סיסמה שגויים"
-  },
-  "mainMenu": {
-    "logout": "התנתק",
-    "profile": "פרופיל",
-    "settings": "הגדרות",
-    "help": "עזרה",
-    "ourStory": "הסיפור שלנו",
-    "contact": "צור קשר",
-    "login": "התחבר",
-    "register": "הירשם"
-  },
-  "form": {
-    "email": "דוא\"ל",
-    "password": "סיסמה",
-    "forgotPassword": "שכחת סיסמה?",
-    "submit": "שלח",
-    "cancel": "ביטול"
+    "auth": "שגיאת אימות",
+    "success": "הצלחה"
   },
   "index": {
     "title": "GOAL GG",
-    "friendly": "חברתי",
+    "friendly": "ידידותי",
     "professional": "מקצועי",
-    "description": "קח את התחביב שלך צעד אחד קדימה עם"
+    "description": "קח את התחביב שלך עוד גול קדימה עם"
   },
   "loginModal": {
     "dontHaveAccountYet": "עדיין אין לך חשבון?",
-    "clickHere": "לחץ כאן להירשם",
+    "clickHere": "לחץ כאן להרשמה",
     "login": "התחבר",
-    "register": "הירשם",
-    "emailOrPasswordError": "דוא\"ל או סיסמה שגויים"
+    "register": "הרשם",
+    "emailOrPasswordError": "אימייל או סיסמה שגויים",
+    "loginSuccess": "התחברת בהצלחה",
+    "loginError": "ההתחברות נכשלה"
   },
-  "signup": {
-    "alreadyHaveAccount": "כבר יש לך חשבון?",
-    "clickHere": "לחץ כאן להתחבר",
-    "register": "הירשם",
-    "title": "הרשמה",
-    "fullNameLabel": "שם מלא",
-    "emailLabel": "דוא\"ל",
-    "passwordLabel": "סיסמה",
+  "about": {
+    "title": "אודות",
+    "whoWeAre": {
+      "title": "מי אנחנו",
+      "content": "אנו קבוצה של אוהדי כדורגל נלהבים שהחליטו להקים מועדון שמשלב את האהבה למשחק עם ערכים של קהילה וספורטיביות. המועדון שלנו הוקם בשנת 2018 ומאז צמח והתפתח לקהילה תוססת ומגובשת."
+    },
+    "ourVision": {
+      "title": "החזון שלנו",
+      "content": "אנו שואפים להיות יותר מסתם מועדון כדורגל - אנו רוצים להיות מקום שבו אנשים מכל הגילאים והרקעים יכולים להתחבר, ללמוד ולצמוח יחד. אנו מאמינים שספורט הוא כלי לשינוי חברתי ולבניית קהילה חזקה."
+    },
+    "ourAchievements": {
+      "title": "ההישגים שלנו",
+      "content": "במהלך השנים, המועדון שלנו זכה במספר תחרויות אזוריות וארציות. אך ההישגים האמיתיים שלנו נמדדים בהתפתחות האישית של השחקנים שלנו ובתרומה שלנו לקהילה המקומית."
+    },
+    "joinUs": {
+      "title": "הצטרפו אלינו",
+      "content": "אנו תמיד מחפשים חברים חדשים להצטרף למשפחה שלנו. בין אם אתם שחקנים מנוסים, מתחילים, או פשוט אוהדים - יש מקום לכולם במועדון שלנו. צרו קשר עוד היום כדי לגלות כיצד תוכלו להשתתף."
+    },
+    "ourValues": {
+      "title": "הערכים שלנו",
+      "content": "אנו מאמינים בכבוד הדדי, משחק הוגן ותמיכה קבוצתית. המועדון שלנו מעודד צמיחה אישית, עבודת צוות ותחושת שייכות. אנו שמים דגש על התפתחות כישורים ובניית אופי דרך הספורט."
+    },
+    "community": {
+      "title": "מעורבות קהילתית",
+      "content": "אנו גאים בתרומתנו לקהילה המקומית. המועדון שלנו מארגן אירועי צדקה, פעילויות חינוכיות לילדים ותוכניות התנדבות. אנו רואים את עצמנו כחלק בלתי נפרד מהקהילה ופועלים ליצירת השפעה חיובית."
+    }
+  },
+  "nav": {
+    "hello": "שלום",
+    "home": "בית",
+    "about": "אודות",
+    "fields": "מגרשים",
+    "clubs": "מועדונים",
+    "users": "משתמשים",
+    "profile": "פרופיל",
     "login": "התחבר",
-    "fullNamePlaceholder": "הזן את שמך המלא",
-    "emailPlaceholder": "הזן את כתובת הדוא\"ל שלך",
-    "passwordPlaceholder": "הזן את הסיסמה שלך",
-    "confirmPasswordPlaceholder": "אשר את הסיסמה שלך",
-    "agreeToTerms": "אני מסכים לתנאים ולהגבלות",
-    "clickHereToLogin": "לחץ כאן להתחבר",
-    "confirmPasswordLabel": "אישור סיסמה",
-    "clickHereToRegister": "לחץ כאן להירשם",
-    "submit": "שלח",
-    "cancel": "ביטול",
-    "phoneLabel": "מספר טלפון",
-    "phonePlaceholder": "הזן את מספר הטלפון שלך",
-    "yearOfBirthLabel": "שנת לידה",
-    "yearOfBirthPlaceholder": "הזן את שנת הלידה שלך",
-    "countryLabel": "מדינה",
-    "countryPlaceholder": "הזן את המדינה שלך",
-    "cityLabel": "עיר",
-    "cityPlaceholder": "הזן את העיר שלך",
+    "register": "הרשם",
+    "logout": "התנתק"
+  },
+  "signUpModal": {
+    "title": "הרשמה",
+    "alreadyHaveAccount": "כבר יש לך חשבון?",
+    "login": "התחבר",
     "firstNameLabel": "שם פרטי",
-    "firstNamePlaceholder": "הזן את שמך הפרטי",
+    "firstNamePlaceholder": "הכנס את השם הפרטי שלך",
     "lastNameLabel": "שם משפחה",
-    "lastNamePlaceholder": "הזן את שם המשפחה שלך",
+    "lastNamePlaceholder": "הכנס את שם המשפחה שלך",
+    "phoneLabel": "מספר טלפון",
+    "phonePlaceholder": "הכנס את מספר הטלפון שלך",
+    "emailLabel": "אימייל",
+    "emailPlaceholder": "הכנס את האימייל שלך",
+    "passwordLabel": "סיסמה",
+    "passwordPlaceholder": "הכנס את הסיסמה שלך",
+    "confirmPasswordLabel": "אימות סיסמה",
+    "confirmPasswordPlaceholder": "אמת את הסיסמה שלך",
     "sportCategoryLabel": "קטגוריית ספורט",
+    "sportCategoryPlaceholder": "בחר קטגוריית ספורט",
     "sportFootball": "כדורגל",
     "sportBasketball": "כדורסל",
-    "userCreatedSuccessfully": "המשתמש נוצר בהצלחה",
-    "failed": "יצירת המשתמש נכשלה"
+    "yearOfBirthLabel": "שנת לידה",
+    "yearOfBirthPlaceholder": "בחר שנת לידה",
+    "countryLabel": "מדינה",
+    "countryPlaceholder": "בחר מדינה",
+    "cityLabel": "עיר",
+    "cityPlaceholder": "בחר עיר",
+    "agreeToTerms": "אני מסכים לתנאים והתניות",
+    "signUpSuccess": "נרשמת בהצלחה",
+    "signUpError": "ההרשמה נכשלה"
   },
   "main": {
-    "fieldChoice": "מצא את השדה המושלם בקרבתך",
+    "fieldChoice": "מצא את המגרש המושלם בקרבתך",
     "playWithYourFriends": "צור או הצטרף למועדונים ושחק עם החברים שלך",
     "friends": "מצא חברים חדשים",
     "or": "או",
-    "fields": "מצא שדה"
+    "fields": "מצא מגרש"
   }
 }

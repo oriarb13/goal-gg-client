@@ -254,17 +254,6 @@ const Nav = ({
                   <div className="space-y-2">
                     <Button
                       className="w-full"
-                      variant="default"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        // Navigate to profile or settings
-                      }}
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      {t("nav.profile")}
-                    </Button>
-                    <Button
-                      className="w-full"
                       variant="outline"
                       onClick={() => {
                         setIsMobileMenuOpen(false);

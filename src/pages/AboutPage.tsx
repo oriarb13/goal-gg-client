@@ -1,5 +1,6 @@
+import AboutWidget from "@/ui/widgets/aboutPage/AboutWidget";
 const AboutPage = () => {
-  return <div>AboutPage</div>;
+  return <AboutWidget />;
 };
 
 export default AboutPage;

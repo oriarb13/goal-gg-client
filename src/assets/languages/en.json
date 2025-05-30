@@ -22,6 +22,53 @@
     "loginSuccess": "Login successful",
     "loginError": "Login failed"
   },
+  "form": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?"
+  },
+  "nav": {
+    "hello": "Hello",
+    "home": "Home",
+    "about": "About",
+    "fields": "Fields",
+    "clubs": "Clubs",
+    "users": "Users",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "about": {
+    "title": "About",
+    "whoWeAre": {
+      "title": "Who We Are",
+      "content": "We are a group of passionate football fans who decided to establish a club that combines love for the game with values of community and sportsmanship. Our club was founded in 2018 and has since grown and developed into a vibrant and cohesive community."
+    },
+    "ourVision": {
+      "title": "Our Vision",
+      "content": "We aspire to be more than just a football club - we want to be a place where people of all ages and backgrounds can connect, learn and grow together. We believe that sport is a tool for social change and building a strong community."
+    },
+    "ourAchievements": {
+      "title": "Our Achievements",
+      "content": "Over the years, our club has won several regional and national competitions. But our real achievements are measured by the personal development of our players and our contribution to the local community."
+    },
+    "joinUs": {
+      "title": "Join Us",
+      "content": "We are always looking for new members to join our family. Whether you are experienced players, beginners, or just fans - there is room for everyone in our club. Contact us today to discover how you can participate."
+    },
+    "ourValues": {
+      "title": "Our Values",
+      "content": "We believe in mutual respect, fair play and team support. Our club encourages personal growth, teamwork and a sense of belonging. We emphasize skill development and character building through sport."
+    },
+    "community": {
+      "title": "Community Involvement",
+      "content": "We are proud of our contribution to the local community. Our club organizes charity events, educational activities for children and volunteer programs. We see ourselves as an integral part of the community and work to create a positive impact."
+    }
+  },
   "signUpModal": {
     "title": "Sign Up",
     "alreadyHaveAccount": "Already have an account?",

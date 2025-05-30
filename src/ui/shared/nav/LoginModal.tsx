@@ -134,10 +134,10 @@ export const LoginModal = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-[95vw] max-w-2xl text-foreground gradient-brand">
         <DialogHeader className="space-y-4 md:space-y-6">
-          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-white text-center">
+          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-slate-800 text-center">
             {t("loginModal.login")}
           </DialogTitle>
-          <DialogDescription className="text-white/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+          <DialogDescription className="text-slate-800/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
             <p className="text-base md:text-lg lg:text-xl">
               {t("loginModal.dontHaveAccountYet")}
             </p>
@@ -147,7 +147,7 @@ export const LoginModal = ({
             />
             {openSignUpModal && (
               <p
-                className="text-base md:text-lg lg:text-xl hover:underline hover:text-white/60 cursor-pointer"
+                className="text-base md:text-lg lg:text-xl hover:underline hover:text-slate-800/60 cursor-pointer"
                 onClick={() => {
                   handleClose();
                   openSignUpModal();
@@ -162,11 +162,11 @@ export const LoginModal = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email Field */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">
+            <Label htmlFor="email" className="text-slate-800">
               {t("form.email")}
             </Label>
             <Input
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
+              className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40"
               id="email"
               name="email"
               type="email"
@@ -182,21 +182,21 @@ export const LoginModal = ({
 
           {/* Password Field */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-white">
+            <div className="flex items-center justify-between ">
+              <Label htmlFor="password" className="text-slate-800">
                 {t("form.password")}
               </Label>
               <Button
                 variant="link"
-                className="text-xs text-white/70 hover:text-white/50 p-0 h-auto"
+                className="text-xs text-slate-800/70 hover:text-slate-800/50 p-0 h-auto"
                 type="button"
               >
-                {t("form.forgotPassword")}
+                {t("for m.forgotPassword")}
               </Button>
             </div>
             <div className="relative">
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 pr-10"
+                className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 pr-10 rtl:pr-3 rtl:pl-10"
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -207,7 +207,7 @@ export const LoginModal = ({
               />
               <Button
                 variant="ghost"
-                className="absolute right-0 top-0 h-full px-3 text-white/70 hover:text-white hover:bg-transparent"
+                className="absolute right-0 rtl:right-auto rtl:left-0 top-0 h-full px-3 text-slate-800/70 hover:text-slate-800 hover:bg-transparent"
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? "Hide password" : "Show password"}
@@ -252,14 +252,14 @@ export const LoginModal = ({
               type="button"
               onClick={handleClose}
               disabled={loginLoading || loginStatus.type === "success"}
-              className="flex-1 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white"
+              className="flex-1 bg-transparent border-white/30 text-slate-800 hover:bg-white/10 hover:text-slate-800"
             >
               {t("common.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={loginLoading || loginStatus.type === "success"}
-              className="flex-1 bg-white text-pgreendark hover:bg-white/90"
+              className="flex-1  hover:bg-white/90"
             >
               {loginLoading ? (
                 <>
