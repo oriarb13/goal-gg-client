@@ -555,16 +555,33 @@ export const SignUpModal = ({
           </div>
 
           <div className="flex items-center space-x-3 md:space-x-4">
-            <Checkbox
-              id="agreeToTerms"
-              checked={formData.agreeToTerms}
-              onCheckedChange={handleCheckboxChange}
-              disabled={registerMutation.isPending}
-              className="border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-pgreendark w-5 h-5 md:w-6 md:h-6"
-            />
+            <div
+              onClick={() => handleCheckboxChange(!formData.agreeToTerms)}
+              className={cn(
+                "w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 rounded cursor-pointer flex items-center justify-center transition-colors",
+                formData.agreeToTerms ? "bg-white" : "bg-transparent"
+              )}
+            >
+              {formData.agreeToTerms && (
+                <svg
+                  className="w-4 h-4 md:w-5 md:h-5 text-slate-800"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              )}
+            </div>
             <Label
               htmlFor="agreeToTerms"
-              className="text-base md:text-lg lg:text-xl font-normal leading-none text-white"
+              className="text-base md:text-lg lg:text-xl font-normal leading-none text-white cursor-pointer"
+              onClick={() => handleCheckboxChange(!formData.agreeToTerms)}
             >
               {t("signUpModal.agreeToTerms")}
             </Label>
