@@ -113,7 +113,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
   if (isPublicRoute) {
     return (
-      <div className="fixed inset-0 overflow-hidden">
+      <div className="fixed inset-0 overflow-hidden font-roboto ">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -169,7 +169,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-300 dark:brightness-[0.5] dark:contrast-75 brightness-100 contrast-100"
         style={{
           backgroundImage: `url(${fieldBg})`,
         }}

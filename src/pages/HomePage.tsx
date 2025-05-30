@@ -1,6 +1,11 @@
+import HomeWidget from "@/ui/widgets/homePage/HomeWidget";
+
 const HomePage = () => {
-  return <div>HomePage</div>;
+  return (
+    <div>
+      <HomeWidget />
+    </div>
+  );
 };
 
 export default HomePage;
-

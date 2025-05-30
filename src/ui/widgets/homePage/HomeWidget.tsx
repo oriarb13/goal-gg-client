@@ -1,14 +1,13 @@
 import clubChoice from "@/assets/images/clubChoice.png";
 import fieldChoice from "@/assets/images/fieldChoice.png";
 import { Card } from "@/ui/shadCN/card";
-import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const MainWidget = () => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [screenSize, setScreenSize] = useState("large");
 
   useEffect(() => {
@@ -39,14 +38,13 @@ const MainWidget = () => {
       {/* Club Choice Image */}
       <div className="w-full md:w-2/5 h-full md:h-3/5 flex justify-center items-center relative">
         <div className="relative w-full h-full md:aspect-[540/500] md:max-w-[800px] md:max-h-[1200px] z-10 group">
-          <Image
+          <img
             src={clubChoice}
             alt="club choice"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
           <div
-            onClick={() => router.push("/clubs")}
+            onClick={() => navigate("/clubs")}
             className="absolute top-0 left-0 w-full h-full bg-black/30 hover:bg-black/50 transition-all duration-300 cursor-pointer flex items-center justify-center"
           >
             {!isMobile && (
@@ -61,14 +59,13 @@ const MainWidget = () => {
       {/* Field Choice Image */}
       <div className="w-full md:w-2/5 h-full md:h-3/5 flex justify-center items-center relative">
         <div className="relative w-full h-full md:aspect-[540/500] md:max-w-[800px] md:max-h-[1200px] z-10 group">
-          <Image
+          <img
             src={fieldChoice}
             alt="field choice"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
           <div
-            onClick={() => router.push("/fields")}
+            onClick={() => navigate("/fields")}
             className="absolute top-0 left-0 w-full h-full bg-black/40 hover:bg-black/60 transition-all duration-300 cursor-pointer flex items-center justify-center"
           >
             {!isMobile && (
@@ -107,7 +104,7 @@ const MainWidget = () => {
       >
         <div className="flex flex-col items-center justify-center text-slate-900 h-full">
           <h1
-            onClick={() => isMobile && router.push("/clubs")}
+            onClick={() => isMobile && navigate("/clubs")}
             className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] lg:tracking-[0.6em] text-center ${
               isMobile
                 ? "cursor-pointer hover:scale-105 transition-transform duration-300"
@@ -120,7 +117,7 @@ const MainWidget = () => {
             {t("main.or")}
           </h1>
           <h1
-            onClick={() => isMobile && router.push("/fields")}
+            onClick={() => isMobile && navigate("/fields")}
             className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-[0.2em] sm:tracking-[0.25em] md:tracking-[0.3em] lg:tracking-[0.4em] text-center ${
               isMobile
                 ? "cursor-pointer hover:scale-105 transition-transform duration-300"

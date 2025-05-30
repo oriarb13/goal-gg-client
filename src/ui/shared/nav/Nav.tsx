@@ -84,7 +84,7 @@ const Nav = ({
     <>
       {/* Desktop Navbar */}
       <div className="hidden md:flex flex-col">
-        <div className="flex justify-between items-center p-4 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="flex justify-between items-center p-4 bg-pgreendarker/80 backdrop-blur-md border-b border-border">
           <div className="flex flex-col items-center">
             {isAuthenticated && currentUser && (
               <div className="w-full border-b border-border/50 px-4 pb-1">
@@ -124,7 +124,7 @@ const Nav = ({
                     to={item.path || ""}
                     className={`text-muted-foreground px-3 py-2 rounded-lg text-2xl font-medium transition-colors hover:bg-accent hover:text-primary-foreground ${
                       isActivePath(item.path || "")
-                        ? "bg-primary text-primary-foreground"
+                        ? "dark:bg-primary bg-plime-light text-primary-foreground"
                         : "text-muted-foreground"
                     }`}
                   >
