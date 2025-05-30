@@ -1,4 +1,5 @@
-import { IClub, User } from "@/types/types";
+import { type ClubFull } from "@/types/clubTypes";
+import { type UserFull } from "@/types/userTypes";
 import { useTranslation } from "react-i18next";
 import { Card } from "@/ui/shadCN/card";
 import {
@@ -9,11 +10,11 @@ import {
   ArrowRightIcon,
 } from "lucide-react";
 import { FootballIcon } from "@/assets/icons/football.icon";
-import SingleClub from "@/ui/shared/SingleClub";
+import SingleClub from "./SingleClub";
 
 interface ClubsTableProps {
-  clubs: IClub[];
-  user: User;
+  clubs: ClubFull[];
+  user: UserFull;
 }
 
 const ClubsTable = ({ clubs, user }: ClubsTableProps) => {
@@ -22,7 +23,7 @@ const ClubsTable = ({ clubs, user }: ClubsTableProps) => {
   return (
     <>
       {/* Column Headers */}
-      <div className="relative mb-6 ">
+      <div className="relative mb-6">
         <Card className="w-full flex flex-row flex-wrap gap-4 justify-between items-center p-4 bg-gray-800 rounded-xl shadow-md mx-2 text-white">
           {/* Club Image & Name */}
           <div className="flex items-center gap-3 w-60">
@@ -78,7 +79,7 @@ const ClubsTable = ({ clubs, user }: ClubsTableProps) => {
       <div className="space-y-4 w-full">
         {clubs.length > 0 ? (
           clubs.map((club) => (
-            <SingleClub key={club._id} club={club} user={user} />
+            <SingleClub key={club.id} club={club} user={user} />
           ))
         ) : (
           <div className="text-center p-8 bg-white/80 rounded-lg shadow">

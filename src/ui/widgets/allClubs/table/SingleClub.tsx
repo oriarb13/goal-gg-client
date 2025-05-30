@@ -1,5 +1,6 @@
 import { Card } from "@/ui/shadCN/card";
-import { IClub, User } from "@/types/types";
+import { type ClubFull } from "@/types/clubTypes";
+import { type UserFull } from "@/types/userTypes";
 import { Button } from "@/ui/shadCN/button";
 import { ClubStatusEnum, SportCategoryEnum } from "@/types/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/ui/shadCN/avatar";
@@ -21,10 +22,12 @@ import {
 } from "lucide-react";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { useEffect, useState, useMemo } from "react";
+import { useClubActions } from "@/service/clubs/clubsQuery";
+import { clubUtils } from "@/service/clubs/clubsApi";
 
 interface SingleClubProps {
-  club: IClub;
-  user: User;
+  club: ClubFull;
+  user: UserFull;
 }
 
 const SingleClub = ({ club, user }: SingleClubProps) => {
@@ -36,16 +39,18 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
   const [distance, setDistance] = useState<string | number>("לא צוין");
   const [isLoading, setIsLoading] = useState(true);
 
+  const { joinClub, leaveClub, joinLoading, leaveLoading } = useClubActions();
+
   // Determine the user's relationship with the club
   const clubRelationship = useMemo(() => {
-    if (user?.clubs?.includes(club._id)) {
+    if (clubUtils.isClubMember(club, user.id)) {
       return "member";
-    } else if (user?.clubsRequests?.includes(club._id)) {
+    } else if (clubUtils.hasPendingRequest(club, user.id)) {
       return "pending";
     } else {
       return "none";
     }
-  }, [user?.clubs, user?.clubsRequests, club._id]);
+  }, [club, user.id]);
 
   // Get user location when component mounts
   useEffect(() => {
@@ -75,12 +80,12 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
       // Haversine formula for more accurate distance calculation
       const calculateDistance = () => {
         const R = 6371; // Earth's radius in km
-        const dLat = deg2rad(club.location?.lat - userCoords.lat);
-        const dLon = deg2rad(club.location?.lng - userCoords.lng);
+        const dLat = deg2rad(Number(club.location?.lat) - userCoords.lat);
+        const dLon = deg2rad(Number(club.location?.lng) - userCoords.lng);
         const a =
           Math.sin(dLat / 2) * Math.sin(dLat / 2) +
           Math.cos(deg2rad(userCoords.lat)) *
-            Math.cos(deg2rad(club.location?.lat)) *
+            Math.cos(deg2rad(Number(club.location?.lat))) *
             Math.sin(dLon / 2) *
             Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -111,6 +116,20 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
     }
   };
 
+  // Handle club actions
+  const handleJoinClub = async () => {
+    await joinClub(club.id);
+  };
+
+  const handleLeaveClub = async () => {
+    await leaveClub(club.id);
+  };
+
+  const handleCancelRequest = async () => {
+    // In a real app, you would have a separate API endpoint for canceling requests
+    console.log("Cancel request for club", club.id);
+  };
+
   // Render the appropriate action button based on the user's relationship with the club
   const renderActionButton = () => {
     switch (clubRelationship) {
@@ -118,17 +137,18 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
         return (
           <Button
             className="bg-red-600 hover:bg-red-700 text-white px-4 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center gap-1"
-            onClick={() => console.log("Leave club", club._id)}
+            onClick={handleLeaveClub}
+            disabled={leaveLoading}
           >
             <LogOutIcon className="h-4 w-4" />
-            {t("club.leave")}
+            {leaveLoading ? t("club.leaving") : t("club.leave")}
           </Button>
         );
       case "pending":
         return (
           <Button
             className="bg-orange-500 hover:bg-orange-600 text-white px-4 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center gap-1"
-            onClick={() => console.log("Cancel request", club._id)}
+            onClick={handleCancelRequest}
           >
             <XIcon className="h-4 w-4" />
             {t("club.cancelRequest")}
@@ -138,10 +158,11 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
         return (
           <Button
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center gap-1"
-            onClick={() => console.log("Join club", club._id)}
+            onClick={handleJoinClub}
+            disabled={joinLoading || clubUtils.isClubFull(club)}
           >
             <UserPlusIcon className="h-4 w-4" />
-            {t("club.join")}
+            {joinLoading ? t("club.joining") : t("club.join")}
           </Button>
         );
       default:
@@ -158,7 +179,7 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
           {/* Avatar and Club Name Section */}
           <div className="flex items-center gap-3">
             <div className="relative">
-              {club.isPrivet && (
+              {club.is_private && (
                 <div className="absolute top-[-6px] right-[-10px] z-10 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full">
                   {t("club.private")}
                 </div>
@@ -197,7 +218,7 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
 
           {/* Sport Type */}
           <div className="flex items-center gap-2">
-            {club.sportCategory === SportCategoryEnum.FOOTBALL ? (
+            {club.sport_category === SportCategoryEnum.FOOTBALL ? (
               <div className="bg-emerald-100 p-2 rounded-full flex items-center justify-center">
                 <FootballIcon />
               </div>
@@ -207,7 +228,7 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
               </div>
             )}
             <span className="text-sm font-medium text-gray-800">
-              {club.sportCategory === SportCategoryEnum.FOOTBALL
+              {club.sport_category === SportCategoryEnum.FOOTBALL
                 ? t("club.football")
                 : t("club.basketball")}
             </span>
@@ -245,8 +266,8 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
                 club.status === ClubStatusEnum.ACTIVE
                   ? "bg-green-100 text-green-800"
                   : club.status === ClubStatusEnum.INACTIVE
-                    ? "bg-red-100 text-red-800"
-                    : "bg-yellow-100 text-yellow-800"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-yellow-100 text-yellow-800"
               }`}
             >
               {getStatusText()}
@@ -259,8 +280,10 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
               <UsersIcon className="h-5 w-5 text-blue-700" />
             </div>
             <span className="text-sm">
-              <span className="font-medium">{club?.members?.length || 0}</span>
-              <span className="text-gray-500">/{club.maxPlayers}</span>
+              <span className="font-medium">
+                {clubUtils.getMembersCount(club)}
+              </span>
+              <span className="text-gray-500">/{club.max_players}</span>
             </span>
           </div>
 

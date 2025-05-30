@@ -5,7 +5,6 @@ import HomePage from "@/pages/HomePage";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
-// import { store } from "./store/store";
 
 import { useEffect } from "react";
 import { store, persistor } from "./store/store";
@@ -13,6 +12,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "sonner";
 import { useInitializeAuth } from "@/service/users/usersQuery";
 import AboutPage from "./pages/AboutPage";
+import ClubsPage from "./pages/ClubsPage";
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const { mutate: initAuth } = useInitializeAuth();
 
@@ -35,6 +35,7 @@ function App() {
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/home" element={<HomePage />} />
+                  <Route path="/clubs" element={<ClubsPage />} />
                 </Routes>
               </MainLayout>
             </BrowserRouter>
