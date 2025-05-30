@@ -191,7 +191,7 @@ export const LoginModal = ({
                 className="text-xs text-slate-800/70 hover:text-slate-800/50 p-0 h-auto"
                 type="button"
               >
-                {t("for m.forgotPassword")}
+                {t("form.forgotPassword")}
               </Button>
             </div>
             <div className="relative">
