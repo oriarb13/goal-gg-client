@@ -276,10 +276,10 @@ export const SignUpModal = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-fit max-w-4xl text-foreground gradient-brand max-h-[85vh] overflow-y-auto overflow-x-hidden mt-20">
         <DialogHeader className="space-y-4 md:space-y-6">
-          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-white text-center">
+          <DialogTitle className="text-2xl md:text-4xl lg:text-5xl font-bold text-slate-800 text-center">
             {t("signUpModal.title")}
           </DialogTitle>
-          <DialogDescription className="text-white/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+          <DialogDescription className="text-slate-800/80 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
             <p className="text-base md:text-lg lg:text-xl">
               {t("signUpModal.alreadyHaveAccount")}
             </p>
@@ -288,7 +288,7 @@ export const SignUpModal = ({
               className="hidden sm:block mx-2 bg-white/30 h-6"
             />
             <p
-              className="text-base md:text-lg lg:text-xl hover:underline hover:text-white/60 cursor-pointer"
+              className="text-base md:text-lg lg:text-xl hover:underline hover:text-slate-800/60 cursor-pointer"
               onClick={() => {
                 handleClose();
                 openLoginModal();
@@ -304,12 +304,12 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="firstName"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.firstNameLabel")}
               </Label>
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
+                className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
                 id="firstName"
                 name="firstName"
                 value={formData.firstName}
@@ -327,12 +327,12 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="lastName"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.lastNameLabel")}
               </Label>
               <Input
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
+                className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
@@ -351,12 +351,12 @@ export const SignUpModal = ({
           <div className="space-y-3 md:space-y-4">
             <Label
               htmlFor="phone"
-              className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
             >
               {t("signUpModal.phoneLabel")}
             </Label>
             <PhoneInput
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
+              className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
               value={formData.phone}
               onChange={handlePhoneChange}
               international
@@ -374,12 +374,12 @@ export const SignUpModal = ({
           <div className="space-y-3 md:space-y-4">
             <Label
               htmlFor="email"
-              className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+              className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
             >
               {t("signUpModal.emailLabel")}
             </Label>
             <Input
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
+              className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6"
               id="email"
               name="email"
               type="email"
@@ -399,13 +399,13 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="password"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.passwordLabel")}
               </Label>
               <div className="relative">
                 <Input
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6 pr-12 md:pr-16"
+                  className="bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6 pr-12 md:pr-16"
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -416,7 +416,7 @@ export const SignUpModal = ({
                 />
                 <Button
                   variant="ghost"
-                  className="absolute right-0 top-0 h-full px-3 md:px-4 text-white/70 hover:text-white hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 md:px-4 text-slate-800/70 hover:text-slate-800 hover:bg-transparent"
                   type="button"
                   onClick={togglePasswordVisibility}
                   disabled={registerMutation.isPending}
@@ -438,13 +438,13 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="confirmPassword"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.confirmPasswordLabel")}
               </Label>
               <Input
                 className={cn(
-                  "bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6",
+                  "bg-white/10 border-white/20 text-slate-800 placeholder:text-slate-800/60 focus:border-white/40 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl px-4 md:px-6",
                   errors.confirmPassword && "border-red-300"
                 )}
                 id="confirmPassword"
@@ -467,7 +467,7 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="sportCategory"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.sportCategoryLabel")}
               </Label>
@@ -478,7 +478,7 @@ export const SignUpModal = ({
                 }
                 disabled={registerMutation.isPending}
               >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
+                <SelectTrigger className="bg-white/10 border-white/20 text-slate-800 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
                   <SelectValue
                     placeholder={t("signUpModal.sportCategoryPlaceholder")}
                   />
@@ -502,7 +502,7 @@ export const SignUpModal = ({
             <div className="space-y-3 md:space-y-4">
               <Label
                 htmlFor="yearOfBirth"
-                className="text-lg md:text-xl lg:text-2xl text-white font-semibold"
+                className="text-lg md:text-xl lg:text-2xl text-slate-800 font-semibold"
               >
                 {t("signUpModal.yearOfBirthLabel")}
               </Label>
@@ -513,7 +513,7 @@ export const SignUpModal = ({
                 }
                 disabled={registerMutation.isPending}
               >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
+                <SelectTrigger className="bg-white/10 border-white/20 text-slate-800 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl">
                   <SelectValue
                     placeholder={t("signUpModal.yearOfBirthPlaceholder")}
                   />
@@ -580,7 +580,7 @@ export const SignUpModal = ({
             </div>
             <Label
               htmlFor="agreeToTerms"
-              className="text-base md:text-lg lg:text-xl font-normal leading-none text-white cursor-pointer"
+              className="text-base md:text-lg lg:text-xl font-normal leading-none text-slate-800 cursor-pointer"
               onClick={() => handleCheckboxChange(!formData.agreeToTerms)}
             >
               {t("signUpModal.agreeToTerms")}
@@ -625,7 +625,7 @@ export const SignUpModal = ({
               disabled={
                 registerMutation.isPending || signUpStatus.type === "success"
               }
-              className="flex-1 bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
+              className="flex-1 bg-transparent border-white/30 text-slate-800 hover:bg-white/10 hover:text-slate-800 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
             >
               {t("common.cancel")}
             </Button>
@@ -634,7 +634,7 @@ export const SignUpModal = ({
               disabled={
                 registerMutation.isPending || signUpStatus.type === "success"
               }
-              className="flex-1 bg-white text-pgreendark hover:bg-white/90 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
+              className="flex-1 hover:bg-white/90 h-12 md:h-14 lg:h-16 text-base md:text-lg lg:text-xl"
             >
               {registerMutation.isPending ? (
                 <>
