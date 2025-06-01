@@ -4,7 +4,6 @@ import { useSearchClubs } from "@/service/clubs/clubsQuery";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/store/slices/userSlice";
 import { Button } from "@/ui/shadCN/button";
-import { PlusCircle } from "lucide-react";
 import SearchAndFilters from "./SearchAndFilters";
 import ClubsTable from "./table/ClubsTable";
 import { type ClubSearchFilters } from "@/types/clubTypes";
@@ -24,16 +23,6 @@ const AllClubsWidget = () => {
 
   const { data: clubs, isLoading, error, refetch } = useSearchClubs(filters);
 
-  const handleCreateClub = () => {
-    console.log("Navigate to create club page");
-    // In a real app, you would navigate to a create club page
-    // navigate('/clubs/create');
-  };
-
-  const handleFiltersChange = (newFilters: Partial<ClubSearchFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  };
-
   const handleReset = () => {
     setFilters({
       name: undefined,
@@ -48,27 +37,14 @@ const AllClubsWidget = () => {
   return (
     <div className="flex flex-col items-center p-4 relative z-10 min-h-screen">
       <div className="w-full max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-center">
-            {t("club.allClubs")}
-          </h1>
-          <Button
-            onClick={handleCreateClub}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center gap-2"
-          >
-            <PlusCircle className="h-5 w-5" />
-            {t("club.createClub")}
-          </Button>
-        </div>
-
-        <p className="text-sm mb-6 text-center text-gray-400">
-          {t("club.chooseOrCreateClub")}
-        </p>
+        <h1 className="text-3xl font-bold text-center mb-6">
+          {t("club.allClubs")}
+        </h1>
 
         {/* Search and Filters Component */}
         <SearchAndFilters
           filters={filters}
-          onFiltersChange={handleFiltersChange}
+          onFiltersChange={setFilters}
           onReset={handleReset}
         />
 

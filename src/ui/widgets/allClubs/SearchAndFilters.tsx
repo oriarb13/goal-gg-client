@@ -12,6 +12,10 @@ import {
   Users,
   Calendar,
   AlignLeft,
+  Check,
+  Globe,
+  Lock,
+  ChevronDown,
 } from "lucide-react";
 import {
   Select,
@@ -21,9 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/shadCN/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/ui/shadCN/dropdown-menu";
 import { Input } from "@/ui/shadCN/input";
 import { Label } from "@/ui/shadCN/label";
-import { Checkbox } from "@/ui/shadCN/checkbox";
 import { type ClubSearchFilters } from "@/types/clubTypes";
 
 interface SearchAndFiltersProps {
@@ -74,14 +85,97 @@ const SearchAndFilters = ({
           </div>
 
           {/* Filter Button */}
-          <Button
-            variant={isFiltersOpen ? "default" : "outline"}
-            className="gap-2"
-            onClick={toggleFilters}
-          >
-            <Filter className="h-4 w-4" />
-            {t("club.filters")}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-48 justify-between">
+                <span>{t("club.filters")}</span>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="start">
+              <DropdownMenuLabel>{t("club.filterOptions")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              {/* Private Club Filter */}
+              <DropdownMenuLabel className="text-xs text-gray-500">
+                {t("club.clubType")}
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onFiltersChange({ is_private: undefined })}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  {t("club.any")}
+                </div>
+                {filters.is_private === undefined && (
+                  <Check className="h-4 w-4" />
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onFiltersChange({ is_private: false })}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  {t("club.publicOnly")}
+                </div>
+                {filters.is_private === false && <Check className="h-4 w-4" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onFiltersChange({ is_private: true })}
+                className="flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  {t("club.privateOnly")}
+                </div>
+                {filters.is_private === true && <Check className="h-4 w-4" />}
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              {/* Sport Category Filter */}
+              <DropdownMenuLabel className="text-xs text-gray-500">
+                {t("club.sportCategory")}
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => onFiltersChange({ sport_category: undefined })}
+                className="flex items-center justify-between"
+              >
+                <span>{t("club.any")}</span>
+                {filters.sport_category === undefined && (
+                  <Check className="h-4 w-4" />
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  onFiltersChange({
+                    sport_category: SportCategoryEnum.FOOTBALL,
+                  })
+                }
+                className="flex items-center justify-between"
+              >
+                <span>{t("club.football")}</span>
+                {filters.sport_category === SportCategoryEnum.FOOTBALL && (
+                  <Check className="h-4 w-4" />
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  onFiltersChange({
+                    sport_category: SportCategoryEnum.BASKETBALL,
+                  })
+                }
+                className="flex items-center justify-between"
+              >
+                <span>{t("club.basketball")}</span>
+                {filters.sport_category === SportCategoryEnum.BASKETBALL && (
+                  <Check className="h-4 w-4" />
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Sort Select */}
           <Select
@@ -131,54 +225,7 @@ const SearchAndFilters = ({
 
         {/* Filters Section (Collapsible) */}
         {isFiltersOpen && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 p-3 bg-gray-50 rounded-lg">
-            {/* Private Club Filter */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isPrivate"
-                checked={filters.is_private || false}
-                onCheckedChange={(checked) =>
-                  onFiltersChange({ is_private: checked as boolean })
-                }
-              />
-              <Label htmlFor="isPrivate" className="cursor-pointer">
-                {t("club.privateOnly")}
-              </Label>
-            </div>
-
-            {/* Sport Category Filter */}
-            <div>
-              <Label
-                htmlFor="sportCategory"
-                className="block mb-1 text-sm font-medium"
-              >
-                {t("club.sportCategory")}
-              </Label>
-              <Select
-                value={filters.sport_category || ""}
-                onValueChange={(value) =>
-                  onFiltersChange({
-                    sport_category: (value as SportCategoryEnum) || undefined,
-                  })
-                }
-              >
-                <SelectTrigger id="sportCategory" className="w-full">
-                  <SelectValue placeholder={t("club.selectSport")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="">{t("club.any")}</SelectItem>
-                    <SelectItem value={SportCategoryEnum.FOOTBALL}>
-                      {t("club.football")}
-                    </SelectItem>
-                    <SelectItem value={SportCategoryEnum.BASKETBALL}>
-                      {t("club.basketball")}
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg"></div>
         )}
       </div>
     </Card>
