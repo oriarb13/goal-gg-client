@@ -14,7 +14,6 @@ import { logout } from "@/store/slices/userSlice";
 import { showSnackBar } from "@/store/slices/snackBarSlice";
 import { useAuth } from "@/service/users/usersQuery";
 import { usersApi } from "@/service/users/usersApi";
-import { GlobalSnackBar } from "@/ui/shared/globalSnackbar";
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -128,7 +127,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             currentUser={currentUser}
             onLogout={handleLogout}
           />
-          <GlobalSnackBar />
           <LoginModal
             isOpen={isLoginModalOpen}
             onClose={() => setIsLoginModalOpen(false)}
@@ -155,7 +153,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           }}
         />
         <div className="relative z-10 h-full flex items-center justify-center">
-          <GlobalSnackBar />
           <div className="text-white text-xl">Loading...</div>
         </div>
       </div>
@@ -182,7 +179,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           currentUser={currentUser}
           onLogout={handleLogout}
         />
-        <GlobalSnackBar />
         <LoginModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}

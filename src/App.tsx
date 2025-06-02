@@ -14,6 +14,9 @@ import { useInitializeAuth } from "@/service/users/usersQuery";
 import AboutPage from "./pages/AboutPage";
 import ClubsPage from "./pages/ClubsPage";
 import ProfilePage from "./pages/ProfilePage";
+import PubSubProvider from "@/lib/pubsub/PubSubProvider";
+import { GlobalSnackBar } from "@/ui/shared/globalSnackbar";
+
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const { mutate: initAuth } = useInitializeAuth();
 
@@ -30,18 +33,21 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
           <AuthInitializer>
-            <BrowserRouter>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/clubs" element={<ClubsPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                </Routes>
-              </MainLayout>
-            </BrowserRouter>
+            <PubSubProvider>
+              <BrowserRouter>
+                <MainLayout>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/clubs" element={<ClubsPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                  </Routes>
+                </MainLayout>
+              </BrowserRouter>
+            </PubSubProvider>
             <Toaster position="top-center" richColors closeButton dir="rtl" />
+            <GlobalSnackBar />
           </AuthInitializer>
         </QueryClientProvider>
       </PersistGate>

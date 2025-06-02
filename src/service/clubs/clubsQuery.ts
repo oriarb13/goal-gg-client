@@ -6,6 +6,7 @@ import { type AppDispatch } from "@/store/store";
 import { useNavigate } from "react-router-dom";
 import { showSnackBar } from "@/store/slices/snackBarSlice";
 import { selectCurrentUser } from "@/store/slices/userSlice";
+import { pubSub } from "@/lib/pubsub/pubSub";
 
 // =============================================
 // Query Keys
@@ -118,6 +119,7 @@ export const useCreateClub = () => {
 export const useJoinClub = () => {
   const dispatch = useDispatch<AppDispatch>();
   const queryClient = useQueryClient();
+  const currentUser = useSelector(selectCurrentUser);
 
   return useMutation({
     mutationFn: (clubId: number) => clubsApi.joinClub(clubId),
@@ -139,6 +141,16 @@ export const useJoinClub = () => {
         });
         queryClient.invalidateQueries({ queryKey: CLUB_QUERY_KEYS.myClubs() });
         queryClient.invalidateQueries({ queryKey: CLUB_QUERY_KEYS.lists() });
+
+        // pubsub-------------------------------------------------------------------------------------------
+        if (data.status === 200 && currentUser) {
+          pubSub.publishClubJoin({
+            clubId,
+            userId: currentUser.id,
+            userName: currentUser.first_name + " " + currentUser.last_name,
+            timestamp: Date.now(),
+          });
+        }
       }
     },
     onError: (error: any) => {
@@ -297,8 +309,6 @@ export const useClubActions = (clubId?: number) => {
     }
   };
 
-
-
   return {
     // Data
     club,
@@ -316,6 +326,5 @@ export const useClubActions = (clubId?: number) => {
     joinLoading: joinClubMutation.isPending,
     acceptLoading: acceptRequestMutation.isPending,
     leaveLoading: leaveClubMutation.isPending,
-
   };
 };
