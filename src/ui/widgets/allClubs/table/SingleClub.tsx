@@ -197,9 +197,7 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <div className="flex flex-row items-center cursor-pointer group text-gray-900">
-                      <h2 className="text-lg font-bold mr-1 truncate">
-                        {club.name}
-                      </h2>
+                      <h2 className="text-lg font-bold mr-1 ">{club.name}</h2>
                       <InfoIcon className="h-4 w-4 text-emerald-600 opacity-70 group-hover:opacity-100 flex-shrink-0" />
                     </div>
                   </DropdownMenuTrigger>
