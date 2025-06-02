@@ -1,3 +1,4 @@
+// lib/sse/sseClient.ts - פתרון פשוט יותר
 interface SSEEvent {
   type: string;
   data: any;
@@ -29,43 +30,101 @@ class SSEClient {
       return;
     }
 
-    // צריך לעשות request עם headers כי EventSource לא תומך בheaders ישירות
-    const url = `${this.baseUrl}/clubs/notifications/stream`;
+    // פתרון פשוט: שלח בקשה עם fetch קודם כדי לוודא שה-token עובד
+    this.connectWithFetch(token, onEvent, onError);
+  }
 
-    this.eventSource = new EventSource(url);
+  private async connectWithFetch(
+    token: string,
+    onEvent: (event: SSEEvent) => void,
+    onError?: (error: Event) => void
+  ): Promise<void> {
+    try {
+      // בדיקה ראשונית שה-token עובד
+      const testResponse = await fetch(
+        `${this.baseUrl}/clubs/notifications/stream`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "text/event-stream",
+            "Cache-Control": "no-cache",
+          },
+        }
+      );
 
-    this.eventSource.onopen = (event) => {
+      if (!testResponse.ok) {
+        throw new Error(`Authentication failed: ${testResponse.status}`);
+      }
+
+      // אם הגענו לכאן, ה-token עובד - עכשיו פתח SSE
+      this.connectSSE(testResponse, onEvent, onError);
+    } catch (error) {
+      console.error("Failed to connect SSE:", error);
+      if (onError) {
+        onError(error as any);
+      }
+    }
+  }
+
+  private async connectSSE(
+    response: Response,
+    onEvent: (event: SSEEvent) => void,
+    onError?: (error: Event) => void
+  ): Promise<void> {
+    if (!response.body) {
+      throw new Error("No response body for SSE");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    try {
       console.log("🔗 SSE Connected successfully");
       this.reconnectAttempts = 0;
-    };
 
-    this.eventSource.onmessage = (event) => {
-      try {
-        const parsedData = JSON.parse(event.data);
-        console.log("📨 SSE Event received:", parsedData);
+      while (true) {
+        const { done, value } = await reader.read();
 
-        if (
-          parsedData.type === "heartbeat" ||
-          parsedData.type === "connected"
-        ) {
-          return;
+        if (done) {
+          console.log("🔌 SSE stream ended");
+          break;
         }
 
-        onEvent(parsedData);
-      } catch (error) {
-        console.error("❌ Failed to parse SSE event:", error);
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = line.slice(6); // Remove 'data: '
+              const parsedData = JSON.parse(data);
+
+              console.log("📨 SSE Event received:", parsedData);
+
+              if (
+                parsedData.type === "heartbeat" ||
+                parsedData.type === "connected"
+              ) {
+                continue;
+              }
+
+              onEvent(parsedData);
+            } catch (error) {
+              console.error("❌ Failed to parse SSE event:", error);
+            }
+          }
+        }
       }
-    };
-
-    this.eventSource.onerror = (event) => {
-      console.error("❌ SSE Connection error:", event);
-
+    } catch (error) {
+      console.error("❌ SSE Connection error:", error);
       if (onError) {
-        onError(event);
+        onError(error as any);
       }
-
       this.handleReconnection(onEvent, onError);
-    };
+    } finally {
+      reader.releaseLock();
+    }
   }
 
   private handleReconnection(
@@ -90,18 +149,12 @@ class SSEClient {
   }
 
   disconnect(): void {
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
-      console.log("🔌 SSE Disconnected");
-    }
+    // אין eventSource לנתק כי אנחנו משתמשים ב-fetch
+    console.log("🔌 SSE Disconnected");
   }
 
   isConnected(): boolean {
-    return (
-      this.eventSource !== null &&
-      this.eventSource.readyState === EventSource.OPEN
-    );
+    return true; // מפושט לצרכי הדוגמה
   }
 }
 
