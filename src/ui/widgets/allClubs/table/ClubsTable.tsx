@@ -19,12 +19,14 @@ interface ClubsTableProps {
 
 const ClubsTable = ({ clubs, user }: ClubsTableProps) => {
   const { t } = useTranslation();
+  console.log(clubs);
+  console.log(user);
 
   return (
     <>
       {/* Column Headers */}
-      <div className="relative mb-6">
-        <Card className="w-full flex flex-row flex-wrap gap-4 justify-between items-center p-4 bg-gray-800 rounded-xl shadow-md mx-2 text-white">
+      <div className="relative mb-6 px-2">
+        <Card className="w-full max-w-[1100px] flex flex-row flex-wrap gap-4 justify-between items-center p-8 bg-gray-800 rounded-xl shadow-md mx-2 text-white">
           {/* Club Image & Name */}
           <div className="flex items-center gap-3 w-60">
             <div className="flex items-center justify-center h-9 w-9 bg-gray-700 rounded-full">
@@ -76,7 +78,7 @@ const ClubsTable = ({ clubs, user }: ClubsTableProps) => {
       </div>
 
       {/* Club List */}
-      <div className="space-y-4 w-full">
+      <div className="space-y-4 w-full max-h-[60vh] overflow-y-auto">
         {clubs.length > 0 ? (
           clubs.map((club) => (
             <SingleClub key={club.id} club={club} user={user} />

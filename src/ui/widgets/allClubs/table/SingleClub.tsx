@@ -175,120 +175,124 @@ const SingleClub = ({ club, user }: SingleClubProps) => {
       {/* Main Card with Gray Background */}
       <Card className="relative flex flex-row w-full p-6 bg-gray-800/70 shadow-lg overflow-hidden rounded-xl">
         {/* Centered White Card */}
-        <Card className="w-full flex flex-row flex-wrap gap-4 justify-between items-center p-4 bg-white rounded-xl shadow-md mx-2">
-          {/* Avatar and Club Name Section */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              {club.is_private && (
-                <div className="absolute top-[-6px] right-[-10px] z-10 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full">
-                  {t("club.private")}
+        <Card className="w-full p-4 bg-white rounded-xl shadow-md mx-2">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center">
+            {/* Avatar and Club Name Section */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="relative flex-shrink-0">
+                {club.is_private && (
+                  <div className="absolute top-[-6px] right-[-10px] z-10 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full">
+                    {t("club.private")}
+                  </div>
+                )}
+                <Avatar className="h-14 w-14 bg-gray-100 border-2 border-emerald-500">
+                  <AvatarImage src={club.image || ""} />
+                  <AvatarFallback className="text-lg font-bold text-gray-700">
+                    {club.name.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+
+              <div className="flex flex-col min-w-0 flex-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="flex flex-row items-center cursor-pointer group text-gray-900">
+                      <h2 className="text-lg font-bold mr-1 truncate">
+                        {club.name}
+                      </h2>
+                      <InfoIcon className="h-4 w-4 text-emerald-600 opacity-70 group-hover:opacity-100 flex-shrink-0" />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <div className="flex flex-col gap-2 text-black bg-white p-3 rounded-md justify-center items-center shadow-md">
+                        <div className="flex items-center gap-1 text-md font-bold text-emerald-700">
+                          {t("club.description")}
+                        </div>
+                        <p className="text-sm text-gray-700 max-w-md">
+                          {club.description}
+                        </p>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
+            {/* Sport Type */}
+            <div className="flex items-center gap-2 justify-center">
+              {club.sport_category === SportCategoryEnum.FOOTBALL ? (
+                <div className="bg-emerald-100 p-2 rounded-full flex items-center justify-center">
+                  <FootballIcon />
+                </div>
+              ) : (
+                <div className="bg-orange-100 p-2 rounded-full flex items-center justify-center">
+                  <BasketballIcon />
                 </div>
               )}
-              <Avatar className="h-14 w-14 bg-gray-100 border-2 border-emerald-500">
-                <AvatarImage src={club.image || ""} />
-                <AvatarFallback className="text-lg font-bold text-gray-700">
-                  {club.name.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-
-            <div className="flex flex-col">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="flex flex-row items-center cursor-pointer group text-gray-900">
-                    <h2 className="text-lg font-bold mr-1">{club.name}</h2>
-                    <InfoIcon className="h-4 w-4 text-emerald-600 opacity-70 group-hover:opacity-100" />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <div className="flex flex-col gap-2 text-black bg-white p-3 rounded-md justify-center items-center shadow-md">
-                      <div className="flex items-center gap-1 text-md font-bold text-emerald-700">
-                        {t("club.description")}
-                      </div>
-                      <p className="text-sm text-gray-700 max-w-md">
-                        {club.description}
-                      </p>
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-
-          {/* Sport Type */}
-          <div className="flex items-center gap-2">
-            {club.sport_category === SportCategoryEnum.FOOTBALL ? (
-              <div className="bg-emerald-100 p-2 rounded-full flex items-center justify-center">
-                <FootballIcon />
-              </div>
-            ) : (
-              <div className="bg-orange-100 p-2 rounded-full flex items-center justify-center">
-                <BasketballIcon />
-              </div>
-            )}
-            <span className="text-sm font-medium text-gray-800">
-              {club.sport_category === SportCategoryEnum.FOOTBALL
-                ? t("club.football")
-                : t("club.basketball")}
-            </span>
-          </div>
-
-          {/* Location and Distance */}
-          <div className="flex items-center gap-2">
-            <div className="bg-purple-100 p-2 rounded-full flex items-center justify-center">
-              <MapPinIcon className="h-5 w-5 text-purple-700" />
-            </div>
-            <div className="text-sm">
-              <div>
-                <span className="font-medium">
-                  {club?.location?.city || t("club.notSpecified")}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500">
-                {isLoading ? (
-                  <span>{t("club.calculatingDistance")}...</span>
-                ) : (
-                  <span>
-                    {typeof distance === "number" || !isNaN(Number(distance))
-                      ? `${distance} ${t("club.km")}`
-                      : t("club.unknownDistance")}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                club.status === ClubStatusEnum.ACTIVE
-                  ? "bg-green-100 text-green-800"
-                  : club.status === ClubStatusEnum.INACTIVE
-                  ? "bg-red-100 text-red-800"
-                  : "bg-yellow-100 text-yellow-800"
-              }`}
-            >
-              {getStatusText()}
-            </span>
-          </div>
-
-          {/* Members Count */}
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-100 p-2 rounded-full flex items-center justify-center">
-              <UsersIcon className="h-5 w-5 text-blue-700" />
-            </div>
-            <span className="text-sm">
-              <span className="font-medium">
-                {clubUtils.getMembersCount(club)}
+              <span className="text-sm font-medium text-gray-800 truncate">
+                {club.sport_category === SportCategoryEnum.FOOTBALL
+                  ? t("club.football")
+                  : t("club.basketball")}
               </span>
-              <span className="text-gray-500">/{club.max_players}</span>
-            </span>
-          </div>
+            </div>
 
-          {/* Dynamic Action Button */}
-          {renderActionButton()}
+            {/* Location and Distance */}
+            <div className="flex items-center gap-2 justify-center">
+              <div className="bg-purple-100 p-2 rounded-full flex items-center justify-center">
+                <MapPinIcon className="h-5 w-5 text-purple-700" />
+              </div>
+              <div className="text-sm min-w-0">
+                <div>
+                  <span className="font-medium truncate block">
+                    {club?.location?.city || t("club.notSpecified")}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {isLoading ? (
+                    <span>{t("club.calculatingDistance")}...</span>
+                  ) : (
+                    <span>
+                      {typeof distance === "number" || !isNaN(Number(distance))
+                        ? `${distance} ${t("club.km")}`
+                        : t("club.unknownDistance")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex justify-center">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                  club.status === ClubStatusEnum.ACTIVE
+                    ? "bg-green-100 text-green-800"
+                    : club.status === ClubStatusEnum.INACTIVE
+                    ? "bg-red-100 text-red-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }`}
+              >
+                {getStatusText()}
+              </span>
+            </div>
+
+            {/* Members Count */}
+            <div className="flex items-center gap-2 justify-center">
+              <div className="bg-blue-100 p-2 rounded-full flex items-center justify-center">
+                <UsersIcon className="h-5 w-5 text-blue-700" />
+              </div>
+              <span className="text-sm whitespace-nowrap">
+                <span className="font-medium">
+                  {clubUtils.getMembersCount(club)}
+                </span>
+                <span className="text-gray-500">/{club.max_players}</span>
+              </span>
+            </div>
+
+            {/* Dynamic Action Button */}
+            <div className="flex justify-center">{renderActionButton()}</div>
+          </div>
         </Card>
       </Card>
     </div>

@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import { useInitializeAuth } from "@/service/users/usersQuery";
 import AboutPage from "./pages/AboutPage";
 import ClubsPage from "./pages/ClubsPage";
+import ProfilePage from "./pages/ProfilePage";
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const { mutate: initAuth } = useInitializeAuth();
 
@@ -36,6 +37,7 @@ function App() {
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/home" element={<HomePage />} />
                   <Route path="/clubs" element={<ClubsPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                 </Routes>
               </MainLayout>
             </BrowserRouter>
